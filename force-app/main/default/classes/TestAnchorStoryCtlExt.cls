@@ -3,10 +3,10 @@ public class TestAnchorStoryCtlExt {
 
     static testMethod void test_recordAccess() {
         Id userId = UserInfo.getUserId();
-        AgouraFree__AnchorStory__c testAnchorStory = createTestAnchorStory('Test Record');      
+        AnchorStory__c testAnchorStory = createTestAnchorStory('Test Record');      
         
         Test.startTest();
-        List<UserRecordAccess> results = AgouraFree.AnchorStoryControllerExt.recordAccess(testAnchorStory.Id);
+        List<UserRecordAccess> results = AnchorStoryControllerExt.recordAccess(testAnchorStory.Id);
 		Test.stopTest();
         
         System.assertEquals(1, results.size());
@@ -17,9 +17,9 @@ public class TestAnchorStoryCtlExt {
         User testUser = createTestUser('userAS12','standarduserAS12@agourasoftware.com','Testing AS12','standarduserAS12@agourasoftware.com');  
         
         Test.startTest();
-        Boolean results = AgouraFree.AnchorStoryControllerExt.createAccess();
+        Boolean results = AnchorStoryControllerExt.createAccess();
         System.runas(testUser) {            
-            Boolean accessResult = AgouraFree.AnchorStoryControllerExt.createAccess(); 
+            Boolean accessResult = AnchorStoryControllerExt.createAccess(); 
             System.assertEquals(False, accessResult);      
         }
 		Test.stopTest();
@@ -28,14 +28,14 @@ public class TestAnchorStoryCtlExt {
     }
     
     static testMethod void test_getRecordTitle() {
-        AgouraFree__AnchorStory__c testAnchorStory = createTestAnchorStory('Test Record');
+        AnchorStory__c testAnchorStory = createTestAnchorStory('Test Record');
         User testUser = createTestUser('userAS2','standarduserAS2@agourasoftware.com','Testing AS2','standarduserAS2@agourasoftware.com'); 
         
         Test.startTest();
-        List<AgouraFree__AnchorStory__c> results = AgouraFree.AnchorStoryControllerExt.getWebPageTitle(testAnchorStory.Id);
+        List<AnchorStory__c> results = AnchorStoryControllerExt.getWebPageTitle(testAnchorStory.Id);
         System.runas(testUser) {
             try {
-                List<AgouraFree__AnchorStory__c> accessResult = AgouraFree.AnchorStoryControllerExt.getWebPageTitle(testAnchorStory.Id);
+                List<AnchorStory__c> accessResult = AnchorStoryControllerExt.getWebPageTitle(testAnchorStory.Id);
             } catch (AuraHandledException e) {
                 System.assertEquals('Insufficient access', e.getMessage());
             }
@@ -43,19 +43,19 @@ public class TestAnchorStoryCtlExt {
 		Test.stopTest();
         
         System.assertEquals(1, results.size());
-        System.assertEquals('Test Record', results.get(0).AgouraFree__Title__c);
+        System.assertEquals('Test Record', results.get(0).Title__c);
     } 
     
     static testMethod void test_getUsers() {
         Id userId = UserInfo.getUserId();
-        AgouraFree__AnchorStory__c testAnchorStory = createTestAnchorStory('Test Record');
+        AnchorStory__c testAnchorStory = createTestAnchorStory('Test Record');
         User testUser = createTestUser('userAS3','standarduserAS3@agourasoftware.com','Testing AS3','standarduserAS3@agourasoftware.com'); 
         
         Test.startTest();
-        List<AgouraFree.LookupSearchResult> results = AgouraFree.AnchorStoryControllerExt.getUsers(testAnchorStory.Id);
+        List<LookupSearchResult> results = AnchorStoryControllerExt.getUsers(testAnchorStory.Id);
         System.runas(testUser) {
             try {
-                List<AgouraFree.LookupSearchResult> accessResult = AgouraFree.AnchorStoryControllerExt.getUsers(testAnchorStory.Id);
+                List<LookupSearchResult> accessResult = AnchorStoryControllerExt.getUsers(testAnchorStory.Id);
             } catch (AuraHandledException e) {
                 System.assertEquals('Insufficient access', e.getMessage());
             }
@@ -70,17 +70,17 @@ public class TestAnchorStoryCtlExt {
     
     static testMethod void test_anchorStorySearch() {
         Id [] fixedResults = new Id[1]; 
-        AgouraFree__AnchorStory__c testAnchorStory = createTestAnchorStory('Test Record');
+        AnchorStory__c testAnchorStory = createTestAnchorStory('Test Record');
         fixedResults.add(testAnchorStory.Id);
         Test.setFixedSearchResults(fixedResults);
         List<String> selectedIds = new List<String>();
         User testUser = createTestUser('userAS4','standarduserAS4@agourasoftware.com','Testing AS4','standarduserAS4@agourasoftware.com'); 
         
         Test.startTest();
-        List<AgouraFree.LookupSearchResult> results = AgouraFree.AnchorStoryControllerExt.anchorStorySearch('Test Record', selectedIds, '');
+        List<LookupSearchResult> results = AnchorStoryControllerExt.anchorStorySearch('Test Record', selectedIds, '');
         System.runas(testUser) {
             try {
-                List<AgouraFree.LookupSearchResult> accessResult = AgouraFree.AnchorStoryControllerExt.anchorStorySearch('Test Record', selectedIds, ''); 
+                List<LookupSearchResult> accessResult = AnchorStoryControllerExt.anchorStorySearch('Test Record', selectedIds, ''); 
             } catch (AuraHandledException e) {
                 System.assertEquals('Insufficient access', e.getMessage());
             }
@@ -93,23 +93,23 @@ public class TestAnchorStoryCtlExt {
     
     static testMethod void test_cloneAndMasterTask() {
         Id [] fixedResults = new Id[1];
-        AgouraFree__AnchorStory__c testAnchorStoryMaster = createTestAnchorStory('Test Record'); 
-        AgouraFree__AnchorStory__c testAnchorStory = createTestAnchorStoryBig('Test Record', 'Test String', 10, testAnchorStoryMaster.Id);
+        AnchorStory__c testAnchorStoryMaster = createTestAnchorStory('Test Record'); 
+        AnchorStory__c testAnchorStory = createTestAnchorStoryBig('Test Record', 'Test String', 10, testAnchorStoryMaster.Id);
         fixedResults.add(testAnchorStoryMaster.Id);
         Test.setFixedSearchResults(fixedResults);
         User testUser = createTestUser('userAS5','standarduserAS5@agourasoftware.com','Testing AS5','standarduserAS5@agourasoftware.com'); 
         
         Test.startTest();
-        Id result = AgouraFree.AnchorStoryControllerExt.createCloneAnchorStory(testAnchorStory.Id);        
-        List<AgouraFree__AnchorStory__c> resultMasterTask = AgouraFree.AnchorStoryControllerExt.getMasterTask(testAnchorStory.Id);
+        Id result = AnchorStoryControllerExt.createCloneAnchorStory(testAnchorStory.Id);        
+        List<AnchorStory__c> resultMasterTask = AnchorStoryControllerExt.getMasterTask(testAnchorStory.Id);
         System.runas(testUser) {
             try {
-                Id accessResult = AgouraFree.AnchorStoryControllerExt.createCloneAnchorStory(testAnchorStory.Id);  
+                Id accessResult = AnchorStoryControllerExt.createCloneAnchorStory(testAnchorStory.Id);  
             } catch (AuraHandledException e) {
                 System.assertEquals('Insufficient access', e.getMessage());
             }
             try {
-                List<AgouraFree__AnchorStory__c> accessResult2 = AgouraFree.AnchorStoryControllerExt.getMasterTask(testAnchorStory.Id);
+                List<AnchorStory__c> accessResult2 = AnchorStoryControllerExt.getMasterTask(testAnchorStory.Id);
             } catch (AuraHandledException e) {
                 System.assertEquals('Insufficient access', e.getMessage());
             }
@@ -117,22 +117,22 @@ public class TestAnchorStoryCtlExt {
 		Test.stopTest();
 
         System.assert(result != null);
-        System.assertEquals(testAnchorStoryMaster.Id, resultMasterTask.get(0).AgouraFree__Master_Task__c);        
+        System.assertEquals(testAnchorStoryMaster.Id, resultMasterTask.get(0).Master_Task__c);        
     }
     
     static testMethod void test_subTask() {
         Id [] fixedResults = new Id[1];
-        AgouraFree__AnchorStory__c testAnchorStoryMaster = createTestAnchorStory('Test Record'); 
-        AgouraFree__AnchorStory__c testAnchorStory = createTestAnchorStoryBig('Test Record', 'Test String', 10, testAnchorStoryMaster.Id);
+        AnchorStory__c testAnchorStoryMaster = createTestAnchorStory('Test Record'); 
+        AnchorStory__c testAnchorStory = createTestAnchorStoryBig('Test Record', 'Test String', 10, testAnchorStoryMaster.Id);
         fixedResults.add(testAnchorStory.Id);
         Test.setFixedSearchResults(fixedResults);
         User testUser = createTestUser('userAS6','standarduserAS6@agourasoftware.com','Testing AS6','standarduserAS6@agourasoftware.com'); 
         
         Test.startTest();        
-        List<AgouraFree__AnchorStory__c> resultSubTask = AgouraFree.AnchorStoryControllerExt.getSubTasks(testAnchorStoryMaster.Id);
+        List<AnchorStory__c> resultSubTask = AnchorStoryControllerExt.getSubTasks(testAnchorStoryMaster.Id);
         System.runas(testUser) {
             try {
-                List<AgouraFree__AnchorStory__c> accessResult = AgouraFree.AnchorStoryControllerExt.getSubTasks(testAnchorStoryMaster.Id);
+                List<AnchorStory__c> accessResult = AnchorStoryControllerExt.getSubTasks(testAnchorStoryMaster.Id);
             } catch (AuraHandledException e) {
                 System.assertEquals('Insufficient access', e.getMessage());
             }
@@ -145,15 +145,15 @@ public class TestAnchorStoryCtlExt {
     
     static testMethod void test_update_document_owner() {
         Id userId = UserInfo.getUserId();
-        AgouraFree__AnchorStory__c testAnchorStory = createTestAnchorStory('Test Record');
+        AnchorStory__c testAnchorStory = createTestAnchorStory('Test Record');
         User testUser = createAdminUser('userAS7','standarduserAS7@agourasoftware.com','Testing AS7','standarduserAS7@agourasoftware.com'); 
         User testUser2 = createTestUser('userAS8','standarduserAS8@agourasoftware.com','Testing AS8','standarduserAS8@agourasoftware.com'); 
         
         Test.startTest();
-        AgouraFree__AnchorStory__c updateTest = AgouraFree.AnchorStoryControllerExt.updateDocumentOwner(testAnchorStory.Id, testUser.id);
+        AnchorStory__c updateTest = AnchorStoryControllerExt.updateDocumentOwner(testAnchorStory.Id, testUser.id);
         System.runas(testUser2) {
             try {
-                AgouraFree__AnchorStory__c accessResult = AgouraFree.AnchorStoryControllerExt.updateDocumentOwner(testAnchorStory.Id, testUser2.id);
+                AnchorStory__c accessResult = AnchorStoryControllerExt.updateDocumentOwner(testAnchorStory.Id, testUser2.id);
             } catch (AuraHandledException e) {
                 System.assertEquals('Insufficient access', e.getMessage());
             }
@@ -171,7 +171,7 @@ public class TestAnchorStoryCtlExt {
         List<String> selectedIds = new List<String>();
         
         Test.startTest();
-        List<AgouraFree.LookupSearchResult> results = AgouraFree.AnchorStoryControllerExt.userOnlySearch('Test', selectedIds);
+        List<LookupSearchResult> results = AnchorStoryControllerExt.userOnlySearch('Test', selectedIds);
         Test.stopTest();
         
         System.assertEquals(1, results.size());
@@ -189,7 +189,7 @@ public class TestAnchorStoryCtlExt {
         selectedIds.add(testUser2.Id);
         
         Test.startTest();
-        List<AgouraFree.LookupSearchResult> results = AgouraFree.AnchorStoryControllerExt.userOnlySearch('Testing', selectedIds);
+        List<LookupSearchResult> results = AnchorStoryControllerExt.userOnlySearch('Testing', selectedIds);
         Test.stopTest();
         
         System.assertEquals(1, results.size());
@@ -197,7 +197,7 @@ public class TestAnchorStoryCtlExt {
     }
     
     static testMethod void test_projectSearch() {
-        AgouraFree__Project__c testProject = createTestProject('Test Project', 'TESTTESTTEST');
+        Project__c testProject = createTestProject('Test Project', 'TESTTESTTEST');
         Id [] fixedResults = new Id[1]; 
         fixedResults.add(testProject.Id);
         Test.setFixedSearchResults(fixedResults);
@@ -205,10 +205,10 @@ public class TestAnchorStoryCtlExt {
         User testUser = createTestUser('userAS13','standarduserAS13@agourasoftware.com','Testing AS13','standarduserAS13@agourasoftware.com');
         
         Test.startTest();
-        List<AgouraFree.LookupSearchResult> results = AgouraFree.AnchorStoryControllerExt.projectSearch('Test', selectedIds);
+        List<LookupSearchResult> results = AnchorStoryControllerExt.projectSearch('Test', selectedIds);
         System.runas(testUser) {
             try {
-                List<AgouraFree.LookupSearchResult> accessResult = AgouraFree.AnchorStoryControllerExt.projectSearch('Test', selectedIds); 
+                List<LookupSearchResult> accessResult = AnchorStoryControllerExt.projectSearch('Test', selectedIds); 
             } catch (AuraHandledException e) {
                 System.assertEquals('Insufficient access', e.getMessage());
             }
@@ -220,15 +220,15 @@ public class TestAnchorStoryCtlExt {
     }
     
     static testMethod void test_doCreateProjectTask() {
-        AgouraFree__AnchorStory__c testAnchorStory = createTestAnchorStoryBig('Test Record', 'Test String', 10, null);
-        AgouraFree__Project__c testProject = createTestProject('Test Project', 'TESTTESTTEST');
+        AnchorStory__c testAnchorStory = createTestAnchorStoryBig('Test Record', 'Test String', 10, null);
+        Project__c testProject = createTestProject('Test Project', 'TESTTESTTEST');
         User testUser = createAdminUser('userAS14','standarduserAS14@agourasoftware.com','Testing AS14','standarduserAS14@agourasoftware.com'); 
         
         Test.startTest();
-        Id results2 = AgouraFree.AnchorStoryControllerExt.doCreateProjectTask(testAnchorStory.Id, testProject.Id);
+        Id results2 = AnchorStoryControllerExt.doCreateProjectTask(testAnchorStory.Id, testProject.Id);
         System.runas(testUser) {
             try {
-                Id accessResult = AgouraFree.AnchorStoryControllerExt.doCreateProjectTask(testAnchorStory.Id, testProject.Id);
+                Id accessResult = AnchorStoryControllerExt.doCreateProjectTask(testAnchorStory.Id, testProject.Id);
             } catch (AuraHandledException e) {
                 System.assertEquals('Insufficient access', e.getMessage());
             }
@@ -240,39 +240,39 @@ public class TestAnchorStoryCtlExt {
             
 	static testMethod void test_getFieldLabelMap() {
         List<String> fieldList = new List<String>();
-        fieldList.add('AgouraFree__Acceptance_Criteria__c');
+        fieldList.add('Acceptance_Criteria__c');
         Test.startTest();
         
-        Map<String, String> results = AgouraFree.AnchorStoryControllerExt.getFieldLabelMap('AgouraFree__AnchorStory__c', fieldList);
+        Map<String, String> results = AnchorStoryControllerExt.getFieldLabelMap('AnchorStory__c', fieldList);
            
-        System.assertEquals(true,results.containsKey('AgouraFree__Acceptance_Criteria__c'));     
+        System.assertEquals(true,results.containsKey('Acceptance_Criteria__c'));     
 		Test.stopTest();
     }
     
     //
     // create test data
     //
-    private static AgouraFree__AnchorStory__c createTestAnchorStory(String anchorStoryName) {
-        AgouraFree__AnchorStory__c testAnchorStory = new AgouraFree__AnchorStory__c(AgouraFree__Title__c=anchorStoryName,
-                                                                            AgouraFree__Type__c='User Story');        
+    private static AnchorStory__c createTestAnchorStory(String anchorStoryName) {
+        AnchorStory__c testAnchorStory = new AnchorStory__c(Title__c=anchorStoryName,
+                                                                            Type__c='User Story');        
         insert testAnchorStory;
         return testAnchorStory;
     }
     
-    private static AgouraFree__AnchorStory__c createTestAnchorStoryBig(String anchorStoryName, String testString, Decimal testDecimal, Id recId) {
-        AgouraFree__AnchorStory__c testAnchorStory = new AgouraFree__AnchorStory__c(AgouraFree__Title__c=anchorStoryName,
-                                                                            AgouraFree__Acceptance_Criteria__c=testString, 
-                                                                            AgouraFree__Comments__c=testString, 
-                                                                            AgouraFree__Components__c=testString, 
-                                                                            AgouraFree__Dependencies__c=testString, 
-                                                                            AgouraFree__Description__c=testString, 
-                                                                            AgouraFree__Master_Task__c=recId, 
-                                                                            AgouraFree__Points__c=testDecimal, 
-                                                                            AgouraFree__Priority__c='High', 
-                                                                            AgouraFree__Search_Terms__c=testString, 
-                                                                            AgouraFree__Time_Estimate__c=testDecimal, 
-                                                                            AgouraFree__Value__c=testString,
-                                                                            AgouraFree__Type__c='User Story');        
+    private static AnchorStory__c createTestAnchorStoryBig(String anchorStoryName, String testString, Decimal testDecimal, Id recId) {
+        AnchorStory__c testAnchorStory = new AnchorStory__c(Title__c=anchorStoryName,
+                                                                            Acceptance_Criteria__c=testString, 
+                                                                            Comments__c=testString, 
+                                                                            Components__c=testString, 
+                                                                            Dependencies__c=testString, 
+                                                                            Description__c=testString, 
+                                                                            Master_Task__c=recId, 
+                                                                            Points__c=testDecimal, 
+                                                                            Priority__c='High', 
+                                                                            Search_Terms__c=testString, 
+                                                                            Time_Estimate__c=testDecimal, 
+                                                                            Value__c=testString,
+                                                                            Type__c='User Story');        
         insert testAnchorStory;
         return testAnchorStory;
     }
@@ -296,25 +296,25 @@ public class TestAnchorStoryCtlExt {
         insert testUser;
         return testUser;
     }  
-    private static AgouraFree__Project__c createTestProject(String title, String abbrev) {
-        AgouraFree__Project__c testProject = new AgouraFree__Project__c(AgouraFree__Title__c=title,
-                                                                AgouraFree__Project_Abbreviation__c=abbrev,
-                                                                AgouraFree__Status__c='Draft');
+    private static Project__c createTestProject(String title, String abbrev) {
+        Project__c testProject = new Project__c(Title__c=title,
+                                                                Project_Abbreviation__c=abbrev,
+                                                                Status__c='Draft');
         insert testProject;
         return testProject;
     }
     
-    private static AgouraFree__ProjectTask__c createTestProjectTask(Id projectId, String title, Decimal points, Id swimLane, Id masterTask, Decimal order,
+    private static ProjectTask__c createTestProjectTask(Id projectId, String title, Decimal points, Id swimLane, Id masterTask, Decimal order,
                                                                 Id userId, Id sprintId, String typeStr) {
-		AgouraFree__ProjectTask__c testProjectTask = new AgouraFree__ProjectTask__c(AgouraFree__Project__c=projectId,
-                                                                            AgouraFree__Title__c=title,
-                                                                            AgouraFree__Points__c=points,
-                                                                            AgouraFree__Swim_Lane__c=swimLane,
-                                                                            AgouraFree__Master_Task__c=masterTask,
-                                                                            AgouraFree__Order__c=order,
-                                                                            AgouraFree__Assigned_To__c=userId,
-                                                                            AgouraFree__Sprint__c=sprintId,
-                                                                            AgouraFree__Type__c=typeStr);
+		ProjectTask__c testProjectTask = new ProjectTask__c(Project__c=projectId,
+                                                                            Title__c=title,
+                                                                            Points__c=points,
+                                                                            Swim_Lane__c=swimLane,
+                                                                            Master_Task__c=masterTask,
+                                                                            Order__c=order,
+                                                                            Assigned_To__c=userId,
+                                                                            Sprint__c=sprintId,
+                                                                            Type__c=typeStr);
         insert testProjectTask;
 		return testProjectTask;
     }
