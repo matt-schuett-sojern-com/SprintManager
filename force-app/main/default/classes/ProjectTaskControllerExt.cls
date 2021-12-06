@@ -55,16 +55,16 @@ public with sharing class ProjectTaskControllerExt {
                                      WHERE Id IN (SELECT Assigned_To__c FROM ProjectTask__c WHERE Id = :recId)
                                      ORDER BY Name];
         
-        List<AgouraFree.LookupSearchResult> results = new List<AgouraFree.LookupSearchResult>();
+        List<LookupSearchResult> results = new List<LookupSearchResult>();
         
         for (User user : searchResults1) {
-            results.add(new AgouraFree.LookupSearchResult(user.Id, 'User', user.SmallPhotoUrl, user.Name, 'Created By'));
+            results.add(new LookupSearchResult(user.Id, 'User', user.SmallPhotoUrl, user.Name, 'Created By'));
         }
         for (User user : searchResults2) {
-            results.add(new AgouraFree.LookupSearchResult(user.Id, 'User', user.SmallPhotoUrl, user.Name, 'Last Modified By'));
+            results.add(new LookupSearchResult(user.Id, 'User', user.SmallPhotoUrl, user.Name, 'Last Modified By'));
         }
         for (User user : searchResults3) {
-            results.add(new AgouraFree.LookupSearchResult(user.Id, 'User', user.SmallPhotoUrl, user.Name, 'Assigned To'));
+            results.add(new LookupSearchResult(user.Id, 'User', user.SmallPhotoUrl, user.Name, 'Assigned To'));
         }
         
         RETURN results;
@@ -134,7 +134,7 @@ public with sharing class ProjectTaskControllerExt {
     }
     
     @AuraEnabled    
-    public static List<AgouraFree.LookupSearchResult> projectSearch(String searchTerm, List<String> selectedIds) {
+    public static List<LookupSearchResult> projectSearch(String searchTerm, List<String> selectedIds) {
         // CRUD and FLS Enforcement
         if (!Schema.sObjectType.Project__c.isAccessible()) {
             System.debug('Insufficient access');
@@ -148,11 +148,11 @@ public with sharing class ProjectTaskControllerExt {
                                              Project__c (Id, Name, Title__c WHERE Id NOT IN :selectedIds ORDER BY Title__c)
                                              LIMIT :MAX_RESULTS];
         
-        List<AgouraFree.LookupSearchResult> results = new List<AgouraFree.LookupSearchResult>();
+        List<LookupSearchResult> results = new List<LookupSearchResult>();
         
         Project__c [] projects = ((List<Project__c>) searchResults[0]);
         for (Project__c project : projects) {
-            results.add(new AgouraFree.LookupSearchResult(project.Id, 'Project__c', 'standard:drafts', project.Title__c, 'Project • ' + project.Name));
+            results.add(new LookupSearchResult(project.Id, 'Project__c', 'standard:drafts', project.Title__c, 'Project • ' + project.Name));
         }
         
         RETURN results;
@@ -242,17 +242,17 @@ public with sharing class ProjectTaskControllerExt {
     }
     
     @AuraEnabled
-    public static List<AgouraFree.LookupSearchResult> userOnlySearch(String searchTerm, List<String> selectedIds) {
+    public static List<LookupSearchResult> userOnlySearch(String searchTerm, List<String> selectedIds) {
         searchTerm += '*';        
         List<List<SObject>> searchResults = [FIND :searchTerm IN ALL FIELDS RETURNING
                                              User (Id, Name, Title, SmallPhotoUrl WHERE Id NOT IN :selectedIds ORDER BY Name)                                          
                                              LIMIT :MAX_RESULTS];
         
-        List<AgouraFree.LookupSearchResult> results = new List<AgouraFree.LookupSearchResult>();
+        List<LookupSearchResult> results = new List<LookupSearchResult>();
         
         User [] users = ((List<User>) searchResults[0]);
         for (User user : users) {
-            results.add(new AgouraFree.LookupSearchResult(user.Id, 'User', user.SmallPhotoUrl, user.Name, 'User • ' + user.Title));
+            results.add(new LookupSearchResult(user.Id, 'User', user.SmallPhotoUrl, user.Name, 'User • ' + user.Title));
         }
         
         RETURN results;
@@ -276,7 +276,7 @@ public with sharing class ProjectTaskControllerExt {
     }
     
     @AuraEnabled    
-    public static List<AgouraFree.LookupSearchResult> sprintSearch(String searchTerm, List<String> selectedIds, String recStr) {   
+    public static List<LookupSearchResult> sprintSearch(String searchTerm, List<String> selectedIds, String recStr) {   
         // CRUD and FLS Enforcement
         if (!Schema.sObjectType.Sprint__c.isAccessible()) {
             System.debug('Insufficient access');
@@ -294,15 +294,15 @@ public with sharing class ProjectTaskControllerExt {
                                            AND Id NOT IN :selectedIds 
                                            ORDER BY Sprint_Name__c
                                            LIMIT 12];    
-        List<AgouraFree.LookupSearchResult> results = new List<AgouraFree.LookupSearchResult>();
+        List<LookupSearchResult> results = new List<LookupSearchResult>();
         for (Sprint__c sprint : sprints) {
-            results.add(new AgouraFree.LookupSearchResult(sprint.Id, 'Sprint__c', 'standard:work_order', sprint.Sprint_Name__c, 'Sprint • ' + sprint.Name));
+            results.add(new LookupSearchResult(sprint.Id, 'Sprint__c', 'standard:work_order', sprint.Sprint_Name__c, 'Sprint • ' + sprint.Name));
         }
         RETURN results;
     }
     
     @AuraEnabled    
-    public static List<AgouraFree.LookupSearchResult> projectTaskSearch(String searchTerm, List<String> selectedIds, String recStr) {
+    public static List<LookupSearchResult> projectTaskSearch(String searchTerm, List<String> selectedIds, String recStr) {
         // CRUD and FLS Enforcement
         if (!Schema.sObjectType.ProjectTask__c.isAccessible()) {
             System.debug('Insufficient access');
@@ -320,11 +320,11 @@ public with sharing class ProjectTaskControllerExt {
                                                                      ORDER BY Task_Number__c)
                                              LIMIT 12];
         
-        List<AgouraFree.LookupSearchResult> results = new List<AgouraFree.LookupSearchResult>();
+        List<LookupSearchResult> results = new List<LookupSearchResult>();
         
         ProjectTask__c [] tasks = ((List<ProjectTask__c>) searchResults[0]);
         for (ProjectTask__c task : tasks) {
-            results.add(new AgouraFree.LookupSearchResult(task.Id, 'ProjectTask__c', 'standard:task', task.Task_Number__c, task.Title__c));
+            results.add(new LookupSearchResult(task.Id, 'ProjectTask__c', 'standard:task', task.Task_Number__c, task.Title__c));
         }
         
         RETURN results;
@@ -347,17 +347,17 @@ public with sharing class ProjectTaskControllerExt {
     }
     
     @AuraEnabled    
-    public static List<AgouraFree.LookupSearchResult> accountSearch(String searchTerm, List<String> selectedIds) {
+    public static List<LookupSearchResult> accountSearch(String searchTerm, List<String> selectedIds) {
         searchTerm += '*';        
         List<List<SObject>> searchResults = [FIND :searchTerm IN ALL FIELDS RETURNING
                                              Account (Id, Name WHERE Id NOT IN :selectedIds ORDER BY Name)
                                              LIMIT :MAX_RESULTS];
         
-        List<AgouraFree.LookupSearchResult> results = new List<AgouraFree.LookupSearchResult>();
+        List<LookupSearchResult> results = new List<LookupSearchResult>();
         
         Account [] accounts = ((List<Account>) searchResults[0]);
         for (Account account : accounts) {
-            results.add(new AgouraFree.LookupSearchResult(account.Id, 'Account', 'standard:account', account.Name, 'Account • ' + account.Id));
+            results.add(new LookupSearchResult(account.Id, 'Account', 'standard:account', account.Name, 'Account • ' + account.Id));
         }
         
         RETURN results;
@@ -365,7 +365,7 @@ public with sharing class ProjectTaskControllerExt {
     
     // Project Task Tag Association - Get, Add, & Remove
     @AuraEnabled
-    public static List<AgouraFree.LookupSearchResult> tagSearch(String searchTerm, List<String> selectedIds) {
+    public static List<LookupSearchResult> tagSearch(String searchTerm, List<String> selectedIds) {
         // CRUD and FLS Enforcement
         if (!Schema.sObjectType.Tag__c.isAccessible()) {
             System.debug('Insufficient access');
@@ -379,11 +379,11 @@ public with sharing class ProjectTaskControllerExt {
                                              Tag__c (Id, Name WHERE Id NOT IN :selectedIds AND For_ProjectTasks__c = True ORDER BY Name)
                                              LIMIT :MAX_RESULTS];
         
-        List<AgouraFree.LookupSearchResult> results = new List<AgouraFree.LookupSearchResult>();
+        List<LookupSearchResult> results = new List<LookupSearchResult>();
         
         Tag__c [] tags = ((List<Tag__c>) searchResults[0]);
         for (Tag__c tag : tags) {
-            results.add(new AgouraFree.LookupSearchResult(tag.Id, 'Tag__c', 'standard:topic', tag.Name, 'Tag • ' + tag.Name));
+            results.add(new LookupSearchResult(tag.Id, 'Tag__c', 'standard:topic', tag.Name, 'Tag • ' + tag.Name));
         }
         
         RETURN results;
