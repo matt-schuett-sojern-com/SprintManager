@@ -8,9 +8,9 @@ public with sharing class ProjectSortControllerExt {
         @AuraEnabled
         public Integer total { get;set; }        
         @AuraEnabled
-        public List<AgouraFree__ProjectTask__c> sortlist { get;set; }        
+        public List<ProjectTask__c> sortlist { get;set; }        
         @AuraEnabled
-        public List<AgouraFree__ProjectTask__c> items { get;set; }        
+        public List<ProjectTask__c> items { get;set; }        
     }
     
     public class Filter {        
@@ -25,25 +25,25 @@ public with sharing class ProjectSortControllerExt {
     }
     
     @AuraEnabled
-    public static AgouraFree__ProjectTask__c removeProjectTask(Id taskId) {
+    public static ProjectTask__c removeProjectTask(Id taskId) {
         // CRUD and FLS Enforcement
-        if (!AgouraFree__ProjectTask__c.sObjectType.getDescribe().isAccessible() || !AgouraFree__ProjectTask__c.sObjectType.getDescribe().isDeletable()) {
+        if (!ProjectTask__c.sObjectType.getDescribe().isAccessible() || !ProjectTask__c.sObjectType.getDescribe().isDeletable()) {
             System.debug('Insufficient access');
             AuraHandledException e = new AuraHandledException('Insufficient access');
             e.setMessage('Insufficient access');
             throw e; 
         }
         
-        List<AgouraFree__ProjectTask__c> deleteMe = [SELECT Id FROM AgouraFree__ProjectTask__c WHERE id = :taskId];
+        List<ProjectTask__c> deleteMe = [SELECT Id FROM ProjectTask__c WHERE id = :taskId];
         delete deleteMe;
         RETURN null;
     }
     
     @AuraEnabled
-    public static List<AgouraFree__ProjectTask__c> sortProjectTasks(Id projectId, List<AgouraFree__ProjectTask__c> projectTasksData){
+    public static List<ProjectTask__c> sortProjectTasks(Id projectId, List<ProjectTask__c> projectTasksData){
         // CRUD and FLS Enforcement
-        String [] checkFields = new String [] {'AgouraFree__Order__c' };
-            Map<String,Schema.SObjectField> m = Schema.SObjectType.AgouraFree__ProjectTask__c.fields.getMap();
+        String [] checkFields = new String [] {'Order__c' };
+            Map<String,Schema.SObjectField> m = Schema.SObjectType.ProjectTask__c.fields.getMap();
         for (String fieldToCheck : checkFields) {
             if (!m.get(fieldToCheck).getDescribe().isUpdateable()) {
                 System.debug('Insufficient access');
@@ -56,12 +56,12 @@ public with sharing class ProjectSortControllerExt {
         
         // update sort order of all project tasks in batches of 1000
         Integer taskTotal = [SELECT Count()  
-                             FROM AgouraFree__ProjectTask__c
-                             WHERE AgouraFree__Project__c = :projectId 
-                             AND AgouraFree__Order__c != NULL];
+                             FROM ProjectTask__c
+                             WHERE Project__c = :projectId 
+                             AND Order__c != NULL];
         
         Integer loopTimes = (Integer)Math.ceil(taskTotal/1000.0);
-        List<AgouraFree__ProjectTask__c> newList = new List<AgouraFree__ProjectTask__c>();
+        List<ProjectTask__c> newList = new List<ProjectTask__c>();
         decimal goodIndex = 1;
         for (Integer i = 0; i < loopTimes; i++) {
             Integer loopStart = i * 1000;
@@ -69,19 +69,19 @@ public with sharing class ProjectSortControllerExt {
             if (loopTimes == (i + 1) ) {
                 loopEnd = 999999;
             }
-            list<AgouraFree__ProjectTask__c> origList = [SELECT Id, AgouraFree__Order__c 
-                                                     FROM AgouraFree__ProjectTask__c
-                                                     WHERE AgouraFree__Project__c = :projectId
-                                                     AND AgouraFree__Order__c >= :loopStart
-                                                     AND AgouraFree__Order__c <= :loopEnd
-                                                     ORDER BY AgouraFree__Order__c
+            list<ProjectTask__c> origList = [SELECT Id, Order__c 
+                                                     FROM ProjectTask__c
+                                                     WHERE Project__c = :projectId
+                                                     AND Order__c >= :loopStart
+                                                     AND Order__c <= :loopEnd
+                                                     ORDER BY Order__c
                                                      LIMIT 2000];
             Integer arrayLength = origList.size();            
             for (Integer j = 0; j < arrayLength; j++) {
-                decimal thisOrder = origList[j].AgouraFree__Order__c;
+                decimal thisOrder = origList[j].Order__c;
                 if (thisOrder != goodIndex) {
-                    AgouraFree__ProjectTask__c resultItem = new AgouraFree__ProjectTask__c(Id=origList[j].Id);   
-                    resultItem.AgouraFree__Order__c = goodIndex;
+                    ProjectTask__c resultItem = new ProjectTask__c(Id=origList[j].Id);   
+                    resultItem.Order__c = goodIndex;
                     newList.add(resultItem);    
                 } 
                 goodIndex += 1;
@@ -94,9 +94,9 @@ public with sharing class ProjectSortControllerExt {
     @AuraEnabled
     public static PagedResult getProjectTasks(String filters, Decimal pageSize, Decimal pageNumber, Id projectId) {
         // CRUD and FLS Enforcement
-        if (!Schema.sObjectType.AgouraFree__Project__c.isAccessible() || 
-            !Schema.sObjectType.AgouraFree__ProjectTask__c.isAccessible() || 
-            !Schema.sObjectType.AgouraFree__Sprint__c.isAccessible()) {
+        if (!Schema.sObjectType.Project__c.isAccessible() || 
+            !Schema.sObjectType.ProjectTask__c.isAccessible() || 
+            !Schema.sObjectType.Sprint__c.isAccessible()) {
                 System.debug('Insufficient access');
                 AuraHandledException e = new AuraHandledException('Insufficient access');
                 e.setMessage('Insufficient access');
@@ -113,123 +113,123 @@ public with sharing class ProjectSortControllerExt {
         Integer sprintNumber = 0;
         
         if (filter.sprintKey == 'All') {
-            r.sortlist = [SELECT Id, AgouraFree__Order__c
-                          FROM AgouraFree__ProjectTask__c
-                          WHERE AgouraFree__Project__c = :projectId
-                          AND AgouraFree__Order__c != NULL
-                          AND AgouraFree__Title__c LIKE :searchKey
-                          AND AgouraFree__Type__c LIKE : (filter.typeKey  == '' ? '%' : filter.typeKey )
-                          ORDER BY AgouraFree__Order__c NULLS LAST, AgouraFree__Sprint__r.AgouraFree__Start_Date__c NULLS LAST, 
-                          AgouraFree__Sprint__r.AgouraFree__Sprint_Number__c NULLS LAST, AgouraFree__Task_Number_Int__c
+            r.sortlist = [SELECT Id, Order__c
+                          FROM ProjectTask__c
+                          WHERE Project__c = :projectId
+                          AND Order__c != NULL
+                          AND Title__c LIKE :searchKey
+                          AND Type__c LIKE : (filter.typeKey  == '' ? '%' : filter.typeKey )
+                          ORDER BY Order__c NULLS LAST, Sprint__r.Start_Date__c NULLS LAST, 
+                          Sprint__r.Sprint_Number__c NULLS LAST, Task_Number_Int__c
                           LIMIT :pSize OFFSET :offset];
-            r.total = [SELECT count() FROM AgouraFree__ProjectTask__c
-                       WHERE AgouraFree__Project__c = :projectId
-                       AND AgouraFree__Title__c LIKE :searchKey
-                       AND AgouraFree__Type__c LIKE : (filter.typeKey  == '' ? '%' : filter.typeKey )];
-            r.items = [SELECT Id, AgouraFree__Order__c, AgouraFree__Task_Number_Int__c, AgouraFree__Task_Number__c, AgouraFree__Title__c, AgouraFree__Formatted_Type__c, AgouraFree__Status__c, 
-                       AgouraFree__Points__c, AgouraFree__Assigned_To__r.Name, AgouraFree__Blocked__c, AgouraFree__Sprint__r.AgouraFree__Start_Date__c, 
-                       AgouraFree__Sprint__r.AgouraFree__Sprint_Name__c, AgouraFree__Sprint__r.AgouraFree__Sprint_Number__c, AgouraFree__Formatted_Status__c, AgouraFree__Priority__c, 
-                       AgouraFree__Due_Date__c, CreatedDate 
-                       FROM AgouraFree__ProjectTask__c
-                       WHERE AgouraFree__Project__c = :projectId
-                       AND AgouraFree__Title__c LIKE :searchKey
-                       AND AgouraFree__Type__c LIKE : (filter.typeKey  == '' ? '%' : filter.typeKey )
-                       ORDER BY AgouraFree__Order__c NULLS LAST, AgouraFree__Sprint__r.AgouraFree__Start_Date__c NULLS LAST, AgouraFree__Sprint__r.AgouraFree__Sprint_Number__c NULLS LAST, 
-                       AgouraFree__Task_Number_Int__c
+            r.total = [SELECT count() FROM ProjectTask__c
+                       WHERE Project__c = :projectId
+                       AND Title__c LIKE :searchKey
+                       AND Type__c LIKE : (filter.typeKey  == '' ? '%' : filter.typeKey )];
+            r.items = [SELECT Id, Order__c, Task_Number_Int__c, Task_Number__c, Title__c, Formatted_Type__c, Status__c, 
+                       Points__c, Assigned_To__r.Name, Blocked__c, Sprint__r.Start_Date__c, 
+                       Sprint__r.Sprint_Name__c, Sprint__r.Sprint_Number__c, Formatted_Status__c, Priority__c, 
+                       Due_Date__c, CreatedDate 
+                       FROM ProjectTask__c
+                       WHERE Project__c = :projectId
+                       AND Title__c LIKE :searchKey
+                       AND Type__c LIKE : (filter.typeKey  == '' ? '%' : filter.typeKey )
+                       ORDER BY Order__c NULLS LAST, Sprint__r.Start_Date__c NULLS LAST, Sprint__r.Sprint_Number__c NULLS LAST, 
+                       Task_Number_Int__c
                        LIMIT :pSize OFFSET :offset];  
         } else if (filter.sprintKey == 'BacklogLatest') {              
-            List<AgouraFree__Sprint__c> Sprnts = [SELECT Id
-                                              FROM AgouraFree__Sprint__c
-                                              WHERE AgouraFree__Project__c = :projectId
-                                              ORDER BY AgouraFree__Start_Date__c DESC, AgouraFree__Sprint_Number__c DESC LIMIT 1]; 
+            List<Sprint__c> Sprnts = [SELECT Id
+                                              FROM Sprint__c
+                                              WHERE Project__c = :projectId
+                                              ORDER BY Start_Date__c DESC, Sprint_Number__c DESC LIMIT 1]; 
             Id sprintId;
             if (Sprnts.size() > 0) {
                 sprintId = Sprnts[0].Id;
             }             
-            r.sortlist = [SELECT Id, AgouraFree__Order__c
-                          FROM AgouraFree__ProjectTask__c
-                          WHERE AgouraFree__Project__c = :projectId
-                          AND ((AgouraFree__Order__c != NULL AND AgouraFree__Sprint__c = '') OR AgouraFree__Sprint__c = :sprintId)
-                          AND AgouraFree__Title__c LIKE :searchKey
-                          AND AgouraFree__Type__c LIKE : (filter.typeKey  == '' ? '%' : filter.typeKey )
-                          ORDER BY AgouraFree__Order__c NULLS LAST, AgouraFree__Sprint__r.AgouraFree__Start_Date__c NULLS LAST, 
-                          AgouraFree__Sprint__r.AgouraFree__Sprint_Number__c NULLS LAST, AgouraFree__Task_Number_Int__c
+            r.sortlist = [SELECT Id, Order__c
+                          FROM ProjectTask__c
+                          WHERE Project__c = :projectId
+                          AND ((Order__c != NULL AND Sprint__c = '') OR Sprint__c = :sprintId)
+                          AND Title__c LIKE :searchKey
+                          AND Type__c LIKE : (filter.typeKey  == '' ? '%' : filter.typeKey )
+                          ORDER BY Order__c NULLS LAST, Sprint__r.Start_Date__c NULLS LAST, 
+                          Sprint__r.Sprint_Number__c NULLS LAST, Task_Number_Int__c
                           LIMIT :pSize OFFSET :offset];
-            r.total = [SELECT count() FROM AgouraFree__ProjectTask__c
-                       WHERE AgouraFree__Project__c = :projectId
-                       AND ((AgouraFree__Order__c != NULL AND AgouraFree__Sprint__c = '') OR AgouraFree__Sprint__c = :sprintId)
-                       AND AgouraFree__Title__c LIKE :searchKey
-                       AND AgouraFree__Type__c LIKE : (filter.typeKey  == '' ? '%' : filter.typeKey )];
-            r.items = [SELECT Id, AgouraFree__Order__c, AgouraFree__Task_Number_Int__c, AgouraFree__Task_Number__c, AgouraFree__Title__c, AgouraFree__Formatted_Type__c, AgouraFree__Status__c, 
-                       AgouraFree__Points__c, AgouraFree__Assigned_To__r.Name, AgouraFree__Blocked__c, AgouraFree__Sprint__r.AgouraFree__Start_Date__c, 
-                       AgouraFree__Sprint__r.AgouraFree__Sprint_Name__c, AgouraFree__Sprint__r.AgouraFree__Sprint_Number__c, AgouraFree__Formatted_Status__c, AgouraFree__Priority__c, 
-                       AgouraFree__Due_Date__c, CreatedDate 
-                       FROM AgouraFree__ProjectTask__c
-                       WHERE AgouraFree__Project__c = :projectId
-                       AND ((AgouraFree__Order__c != NULL AND AgouraFree__Sprint__c = '') OR AgouraFree__Sprint__c = :sprintId)
-                       AND AgouraFree__Title__c LIKE :searchKey
-                       AND AgouraFree__Type__c LIKE : (filter.typeKey  == '' ? '%' : filter.typeKey )           
-                       ORDER BY AgouraFree__Order__c NULLS LAST, AgouraFree__Sprint__r.AgouraFree__Start_Date__c NULLS LAST, AgouraFree__Sprint__r.AgouraFree__Sprint_Number__c NULLS LAST, 
-                       AgouraFree__Task_Number_Int__c
+            r.total = [SELECT count() FROM ProjectTask__c
+                       WHERE Project__c = :projectId
+                       AND ((Order__c != NULL AND Sprint__c = '') OR Sprint__c = :sprintId)
+                       AND Title__c LIKE :searchKey
+                       AND Type__c LIKE : (filter.typeKey  == '' ? '%' : filter.typeKey )];
+            r.items = [SELECT Id, Order__c, Task_Number_Int__c, Task_Number__c, Title__c, Formatted_Type__c, Status__c, 
+                       Points__c, Assigned_To__r.Name, Blocked__c, Sprint__r.Start_Date__c, 
+                       Sprint__r.Sprint_Name__c, Sprint__r.Sprint_Number__c, Formatted_Status__c, Priority__c, 
+                       Due_Date__c, CreatedDate 
+                       FROM ProjectTask__c
+                       WHERE Project__c = :projectId
+                       AND ((Order__c != NULL AND Sprint__c = '') OR Sprint__c = :sprintId)
+                       AND Title__c LIKE :searchKey
+                       AND Type__c LIKE : (filter.typeKey  == '' ? '%' : filter.typeKey )           
+                       ORDER BY Order__c NULLS LAST, Sprint__r.Start_Date__c NULLS LAST, Sprint__r.Sprint_Number__c NULLS LAST, 
+                       Task_Number_Int__c
                        LIMIT :pSize OFFSET :offset];    
         } else if (filter.sprintKey == 'Backlog') {
-            r.sortlist = [SELECT Id, AgouraFree__Order__c
-                          FROM AgouraFree__ProjectTask__c
-                          WHERE AgouraFree__Project__c = :projectId
-                          AND AgouraFree__Order__c != NULL
-                          AND AgouraFree__Title__c LIKE :searchKey
-                          AND AgouraFree__Type__c LIKE : (filter.typeKey  == '' ? '%' : filter.typeKey )
-                          AND AgouraFree__Sprint__c = ''
-                          ORDER BY AgouraFree__Order__c NULLS LAST, AgouraFree__Sprint__r.AgouraFree__Start_Date__c NULLS LAST, 
-                          AgouraFree__Sprint__r.AgouraFree__Sprint_Number__c NULLS LAST, AgouraFree__Task_Number_Int__c
+            r.sortlist = [SELECT Id, Order__c
+                          FROM ProjectTask__c
+                          WHERE Project__c = :projectId
+                          AND Order__c != NULL
+                          AND Title__c LIKE :searchKey
+                          AND Type__c LIKE : (filter.typeKey  == '' ? '%' : filter.typeKey )
+                          AND Sprint__c = ''
+                          ORDER BY Order__c NULLS LAST, Sprint__r.Start_Date__c NULLS LAST, 
+                          Sprint__r.Sprint_Number__c NULLS LAST, Task_Number_Int__c
                           LIMIT :pSize OFFSET :offset];
-            r.total = [SELECT count() FROM AgouraFree__ProjectTask__c
-                       WHERE AgouraFree__Project__c = :projectId
-                       AND AgouraFree__Order__c != NULL
-                       AND AgouraFree__Title__c LIKE :searchKey
-                       AND AgouraFree__Type__c LIKE : (filter.typeKey  == '' ? '%' : filter.typeKey )
-                       AND AgouraFree__Sprint__c = ''];
-            r.items = [SELECT Id, AgouraFree__Order__c, AgouraFree__Task_Number_Int__c, AgouraFree__Task_Number__c, AgouraFree__Title__c, AgouraFree__Formatted_Type__c, AgouraFree__Status__c, 
-                       AgouraFree__Points__c, AgouraFree__Assigned_To__r.Name, AgouraFree__Blocked__c, AgouraFree__Sprint__r.AgouraFree__Start_Date__c, 
-                       AgouraFree__Sprint__r.AgouraFree__Sprint_Name__c, AgouraFree__Sprint__r.AgouraFree__Sprint_Number__c, AgouraFree__Formatted_Status__c, AgouraFree__Priority__c, 
-                       AgouraFree__Due_Date__c, CreatedDate  
-                       FROM AgouraFree__ProjectTask__c
-                       WHERE AgouraFree__Project__c = :projectId
-                       AND AgouraFree__Order__c != NULL
-                       AND AgouraFree__Title__c LIKE :searchKey
-                       AND AgouraFree__Type__c LIKE : (filter.typeKey  == '' ? '%' : filter.typeKey )
-                       AND AgouraFree__Sprint__c = ''
-                       ORDER BY AgouraFree__Order__c NULLS LAST, AgouraFree__Sprint__r.AgouraFree__Start_Date__c NULLS LAST, AgouraFree__Sprint__r.AgouraFree__Sprint_Number__c NULLS LAST, 
-                       AgouraFree__Task_Number_Int__c
+            r.total = [SELECT count() FROM ProjectTask__c
+                       WHERE Project__c = :projectId
+                       AND Order__c != NULL
+                       AND Title__c LIKE :searchKey
+                       AND Type__c LIKE : (filter.typeKey  == '' ? '%' : filter.typeKey )
+                       AND Sprint__c = ''];
+            r.items = [SELECT Id, Order__c, Task_Number_Int__c, Task_Number__c, Title__c, Formatted_Type__c, Status__c, 
+                       Points__c, Assigned_To__r.Name, Blocked__c, Sprint__r.Start_Date__c, 
+                       Sprint__r.Sprint_Name__c, Sprint__r.Sprint_Number__c, Formatted_Status__c, Priority__c, 
+                       Due_Date__c, CreatedDate  
+                       FROM ProjectTask__c
+                       WHERE Project__c = :projectId
+                       AND Order__c != NULL
+                       AND Title__c LIKE :searchKey
+                       AND Type__c LIKE : (filter.typeKey  == '' ? '%' : filter.typeKey )
+                       AND Sprint__c = ''
+                       ORDER BY Order__c NULLS LAST, Sprint__r.Start_Date__c NULLS LAST, Sprint__r.Sprint_Number__c NULLS LAST, 
+                       Task_Number_Int__c
                        LIMIT :pSize OFFSET :offset];   
         } else {
             sprintNumber = Integer.valueOf(filter.sprintKey);
-            r.sortlist = [SELECT Id, AgouraFree__Order__c
-                          FROM AgouraFree__ProjectTask__c
-                          WHERE AgouraFree__Project__c = :projectId
-                          AND AgouraFree__Order__c != NULL
-                          AND AgouraFree__Title__c LIKE :searchKey
-                          AND AgouraFree__Type__c LIKE : (filter.typeKey  == '' ? '%' : filter.typeKey )
-                          AND AgouraFree__Sprint__r.AgouraFree__Sprint_Number__c = :sprintNumber
-                          ORDER BY AgouraFree__Order__c NULLS LAST, AgouraFree__Sprint__r.AgouraFree__Start_Date__c NULLS LAST, 
-                          AgouraFree__Sprint__r.AgouraFree__Sprint_Number__c NULLS LAST, AgouraFree__Task_Number_Int__c
+            r.sortlist = [SELECT Id, Order__c
+                          FROM ProjectTask__c
+                          WHERE Project__c = :projectId
+                          AND Order__c != NULL
+                          AND Title__c LIKE :searchKey
+                          AND Type__c LIKE : (filter.typeKey  == '' ? '%' : filter.typeKey )
+                          AND Sprint__r.Sprint_Number__c = :sprintNumber
+                          ORDER BY Order__c NULLS LAST, Sprint__r.Start_Date__c NULLS LAST, 
+                          Sprint__r.Sprint_Number__c NULLS LAST, Task_Number_Int__c
                           LIMIT :pSize OFFSET :offset];
-            r.total = [SELECT count() FROM AgouraFree__ProjectTask__c
-                       WHERE AgouraFree__Project__c = :projectId
-                       AND AgouraFree__Title__c LIKE :searchKey
-                       AND AgouraFree__Type__c LIKE : (filter.typeKey  == '' ? '%' : filter.typeKey )
-                       AND AgouraFree__Sprint__r.AgouraFree__Sprint_Number__c = :sprintNumber];
-            r.items = [SELECT Id, AgouraFree__Order__c, AgouraFree__Task_Number_Int__c, AgouraFree__Task_Number__c, AgouraFree__Title__c, AgouraFree__Formatted_Type__c, 
-                       AgouraFree__Status__c, AgouraFree__Points__c, AgouraFree__Assigned_To__r.Name, AgouraFree__Blocked__c, AgouraFree__Sprint__r.AgouraFree__Start_Date__c, 
-                       AgouraFree__Sprint__r.AgouraFree__Sprint_Name__c, AgouraFree__Sprint__r.AgouraFree__Sprint_Number__c, AgouraFree__Formatted_Status__c, AgouraFree__Priority__c, 
-                       AgouraFree__Due_Date__c, CreatedDate  
-                       FROM AgouraFree__ProjectTask__c
-                       WHERE AgouraFree__Project__c = :projectId
-                       AND AgouraFree__Title__c LIKE :searchKey
-                       AND AgouraFree__Type__c LIKE : (filter.typeKey  == '' ? '%' : filter.typeKey )
-                       AND AgouraFree__Sprint__r.AgouraFree__Sprint_Number__c = :sprintNumber
-                       ORDER BY AgouraFree__Order__c NULLS LAST, AgouraFree__Sprint__r.AgouraFree__Start_Date__c NULLS LAST, AgouraFree__Sprint__r.AgouraFree__Sprint_Number__c NULLS LAST, 
-                       AgouraFree__Task_Number_Int__c
+            r.total = [SELECT count() FROM ProjectTask__c
+                       WHERE Project__c = :projectId
+                       AND Title__c LIKE :searchKey
+                       AND Type__c LIKE : (filter.typeKey  == '' ? '%' : filter.typeKey )
+                       AND Sprint__r.Sprint_Number__c = :sprintNumber];
+            r.items = [SELECT Id, Order__c, Task_Number_Int__c, Task_Number__c, Title__c, Formatted_Type__c, 
+                       Status__c, Points__c, Assigned_To__r.Name, Blocked__c, Sprint__r.Start_Date__c, 
+                       Sprint__r.Sprint_Name__c, Sprint__r.Sprint_Number__c, Formatted_Status__c, Priority__c, 
+                       Due_Date__c, CreatedDate  
+                       FROM ProjectTask__c
+                       WHERE Project__c = :projectId
+                       AND Title__c LIKE :searchKey
+                       AND Type__c LIKE : (filter.typeKey  == '' ? '%' : filter.typeKey )
+                       AND Sprint__r.Sprint_Number__c = :sprintNumber
+                       ORDER BY Order__c NULLS LAST, Sprint__r.Start_Date__c NULLS LAST, Sprint__r.Sprint_Number__c NULLS LAST, 
+                       Task_Number_Int__c
                        LIMIT :pSize OFFSET :offset];            
         }
         
@@ -238,7 +238,7 @@ public with sharing class ProjectSortControllerExt {
     
     @AuraEnabled
     public static List<String> getTypeKeys() {
-        Schema.DescribeFieldResult result = AgouraFree__ProjectTask__c.AgouraFree__Type__c.getDescribe();
+        Schema.DescribeFieldResult result = ProjectTask__c.Type__c.getDescribe();
         List<Schema.PicklistEntry> entries = result.getPicklistValues();
         List<String> values = new list <String>();
         for (Schema.PicklistEntry entry: entries) {
@@ -250,23 +250,23 @@ public with sharing class ProjectSortControllerExt {
     @AuraEnabled
     public static List<String> getSprintKeys(Id projectId) {        
         // CRUD and FLS Enforcement
-        if (!Schema.sObjectType.AgouraFree__Sprint__c.isAccessible()) {
+        if (!Schema.sObjectType.Sprint__c.isAccessible()) {
             System.debug('Insufficient access');
             AuraHandledException e = new AuraHandledException('Insufficient access');
             e.setMessage('Insufficient access');
             throw e;
         }
         
-        List<AgouraFree__Sprint__c> Sprnts = [SELECT AgouraFree__Sprint_Number__c
-                                          FROM AgouraFree__Sprint__c
-                                          WHERE AgouraFree__Project__c = :projectId
-                                          ORDER BY AgouraFree__Start_Date__c DESC, AgouraFree__Sprint_Number__c
+        List<Sprint__c> Sprnts = [SELECT Sprint_Number__c
+                                          FROM Sprint__c
+                                          WHERE Project__c = :projectId
+                                          ORDER BY Start_Date__c DESC, Sprint_Number__c
                                           LIMIT 10];         
         List<String> values = new list <String>();
         Integer arrayLength = Sprnts.size();     
         String sprintNumber = '';
         for(Integer i = Sprnts.size() - 1; i >= 0; i--){
-            sprintNumber = String.valueOf(Sprnts[i].AgouraFree__Sprint_Number__c);
+            sprintNumber = String.valueOf(Sprnts[i].Sprint_Number__c);
             values.add(sprintNumber);
         }  
         RETURN values;
@@ -274,7 +274,7 @@ public with sharing class ProjectSortControllerExt {
     
     @AuraEnabled
     public static List<String> getIdeaBoardStatusKeys() {
-        Schema.DescribeFieldResult result = AgouraFree__IdeaBoard__c.AgouraFree__Status__c.getDescribe();
+        Schema.DescribeFieldResult result = IdeaBoard__c.Status__c.getDescribe();
         List<Schema.PicklistEntry> entries = result.getPicklistValues();
         List<String> values = new list <String>();
         for (Schema.PicklistEntry entry: entries) {
@@ -285,7 +285,7 @@ public with sharing class ProjectSortControllerExt {
     
     @AuraEnabled
     public static List<String> getProjectStatusKeys() {
-        Schema.DescribeFieldResult result = AgouraFree__Project__c.AgouraFree__Status__c.getDescribe();
+        Schema.DescribeFieldResult result = Project__c.Status__c.getDescribe();
         List<Schema.PicklistEntry> entries = result.getPicklistValues();
         List<String> values = new list <String>();
         for (Schema.PicklistEntry entry: entries) {
@@ -296,7 +296,7 @@ public with sharing class ProjectSortControllerExt {
     
     @AuraEnabled
     public static List<String> getProjectTaskStatusKeys() {
-        Schema.DescribeFieldResult result = AgouraFree__ProjectTask__c.AgouraFree__Status__c.getDescribe();
+        Schema.DescribeFieldResult result = ProjectTask__c.Status__c.getDescribe();
         List<Schema.PicklistEntry> entries = result.getPicklistValues();
         List<String> values = new list <String>();
         for (Schema.PicklistEntry entry: entries) {
