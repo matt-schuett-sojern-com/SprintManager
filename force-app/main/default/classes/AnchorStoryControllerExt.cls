@@ -34,7 +34,7 @@ public with sharing class AnchorStoryControllerExt {
     }
     
     @AuraEnabled
-    public static List<AgouraFree.LookupSearchResult> getUsers(Id recId) {
+    public static List<LookupSearchResult> getUsers(Id recId) {
         // CRUD and FLS Enforcement
         if (!Schema.sObjectType.AnchorStory__c.isAccessible()) {
                 System.debug('Insufficient access');
@@ -53,23 +53,23 @@ public with sharing class AnchorStoryControllerExt {
                                      WHERE Id IN (SELECT OwnerId FROM AnchorStory__c WHERE Id = :recId)
                                      ORDER BY Name];
         
-        List<AgouraFree.LookupSearchResult> results = new List<AgouraFree.LookupSearchResult>();
+        List<LookupSearchResult> results = new List<LookupSearchResult>();
         
         for (User user : searchResults1) {
-            results.add(new AgouraFree.LookupSearchResult(user.Id, 'User', user.SmallPhotoUrl, user.Name, 'Created By'));
+            results.add(new LookupSearchResult(user.Id, 'User', user.SmallPhotoUrl, user.Name, 'Created By'));
         }
         for (User user : searchResults2) {
-            results.add(new AgouraFree.LookupSearchResult(user.Id, 'User', user.SmallPhotoUrl, user.Name, 'Last Modified By'));
+            results.add(new LookupSearchResult(user.Id, 'User', user.SmallPhotoUrl, user.Name, 'Last Modified By'));
         }
         for (User user : searchResults3) {
-            results.add(new AgouraFree.LookupSearchResult(user.Id, 'User', user.SmallPhotoUrl, user.Name, 'Owner'));
+            results.add(new LookupSearchResult(user.Id, 'User', user.SmallPhotoUrl, user.Name, 'Owner'));
         }
         
         RETURN results;
     }
     
     @AuraEnabled    
-    public static List<AgouraFree.LookupSearchResult> anchorStorySearch(String searchTerm, List<String> selectedIds, String recStr) {
+    public static List<LookupSearchResult> anchorStorySearch(String searchTerm, List<String> selectedIds, String recStr) {
         // CRUD and FLS Enforcement
         if (!Schema.sObjectType.AnchorStory__c.isAccessible()) {
             System.debug('Insufficient access');
@@ -84,11 +84,11 @@ public with sharing class AnchorStoryControllerExt {
                                                                      WHERE Id NOT IN :selectedIds AND Id != :recStr
                                                                      ORDER BY Title__c) LIMIT 12];
         
-        List<AgouraFree.LookupSearchResult> results = new List<AgouraFree.LookupSearchResult>();
+        List<LookupSearchResult> results = new List<LookupSearchResult>();
         
         AnchorStory__c [] stories = ((List<AnchorStory__c>) searchResults[0]);
         for (AnchorStory__c story : stories) {
-            results.add(new AgouraFree.LookupSearchResult(story.Id, 'AnchorStory__c', 'standard:task', story.Title__c, 'Anchor Story • ' + story.Name));
+            results.add(new LookupSearchResult(story.Id, 'AnchorStory__c', 'standard:task', story.Title__c, 'Anchor Story • ' + story.Name));
         }
         
         RETURN results;
@@ -188,24 +188,24 @@ public with sharing class AnchorStoryControllerExt {
     }
     
     @AuraEnabled
-    public static List<AgouraFree.LookupSearchResult> userOnlySearch(String searchTerm, List<String> selectedIds) {        
+    public static List<LookupSearchResult> userOnlySearch(String searchTerm, List<String> selectedIds) {        
         searchTerm += '*';        
         List<List<SObject>> searchResults = [FIND :searchTerm IN ALL FIELDS RETURNING
                                              User (Id, Name, Title, SmallPhotoUrl WHERE Id NOT IN :selectedIds ORDER BY Name)                                          
                                              LIMIT :MAX_RESULTS];
         
-        List<AgouraFree.LookupSearchResult> results = new List<AgouraFree.LookupSearchResult>();
+        List<LookupSearchResult> results = new List<LookupSearchResult>();
         
         User [] users = ((List<User>) searchResults[0]);
         for (User user : users) {
-            results.add(new AgouraFree.LookupSearchResult(user.Id, 'User', user.SmallPhotoUrl, user.Name, 'User • ' + user.Title));
+            results.add(new LookupSearchResult(user.Id, 'User', user.SmallPhotoUrl, user.Name, 'User • ' + user.Title));
         }
         
         RETURN results;
     }
     
     @AuraEnabled    
-    public static List<AgouraFree.LookupSearchResult> projectSearch(String searchTerm, List<String> selectedIds) {
+    public static List<LookupSearchResult> projectSearch(String searchTerm, List<String> selectedIds) {
         // CRUD and FLS Enforcement
         if (!Schema.sObjectType.Project__c.isAccessible()) {
             System.debug('Insufficient access');
@@ -219,11 +219,11 @@ public with sharing class AnchorStoryControllerExt {
                                              Project__c (Id, Name, Title__c WHERE Id NOT IN :selectedIds ORDER BY Title__c)
                                              LIMIT :MAX_RESULTS];
         
-        List<AgouraFree.LookupSearchResult> results = new List<AgouraFree.LookupSearchResult>();
+        List<LookupSearchResult> results = new List<LookupSearchResult>();
         
         Project__c [] projects = ((List<Project__c>) searchResults[0]);
         for (Project__c project : projects) {
-            results.add(new AgouraFree.LookupSearchResult(project.Id, 'Project__c', 'standard:drafts', project.Title__c, 'Project • ' + project.Name));
+            results.add(new LookupSearchResult(project.Id, 'Project__c', 'standard:drafts', project.Title__c, 'Project • ' + project.Name));
         }
         
         RETURN results;
