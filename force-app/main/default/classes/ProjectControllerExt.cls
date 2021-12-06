@@ -88,7 +88,7 @@ public with sharing class ProjectControllerExt {
     
     // Search methods
     @AuraEnabled
-    public static List<AgouraFree.LookupSearchResult> tagSearch(String searchTerm, List<String> selectedIds) {
+    public static List<LookupSearchResult> tagSearch(String searchTerm, List<String> selectedIds) {
         // CRUD and FLS Enforcement
         if (!Schema.sObjectType.Tag__c.isAccessible()) {
             System.debug('Insufficient access');
@@ -102,18 +102,18 @@ public with sharing class ProjectControllerExt {
                                              Tag__c (Id, Name WHERE Id NOT IN :selectedIds AND For_Projects__c = True ORDER BY Name)
                                              LIMIT :MAX_RESULTS];
         
-        List<AgouraFree.LookupSearchResult> results = new List<AgouraFree.LookupSearchResult>();
+        List<LookupSearchResult> results = new List<LookupSearchResult>();
         
         Tag__c [] tags = ((List<Tag__c>) searchResults[0]);
         for (Tag__c tag : tags) {
-            results.add(new AgouraFree.LookupSearchResult(tag.Id, 'Tag__c', 'standard:topic', tag.Name, 'Tag • ' + tag.Name));
+            results.add(new LookupSearchResult(tag.Id, 'Tag__c', 'standard:topic', tag.Name, 'Tag • ' + tag.Name));
         }
         
         RETURN results;
     }
     
     @AuraEnabled    
-    public static List<AgouraFree.LookupSearchResult> ideaBoardSearch(String searchTerm, List<String> selectedIds) {
+    public static List<LookupSearchResult> ideaBoardSearch(String searchTerm, List<String> selectedIds) {
         // CRUD and FLS Enforcement
         if (!Schema.sObjectType.IdeaBoard__c.isAccessible()) {
             System.debug('Insufficient access');
@@ -127,51 +127,51 @@ public with sharing class ProjectControllerExt {
                                              IdeaBoard__c (Id, Name, Title__c WHERE Id NOT IN :selectedIds ORDER BY Title__c)
                                              LIMIT :MAX_RESULTS];
         
-        List<AgouraFree.LookupSearchResult> results = new List<AgouraFree.LookupSearchResult>();
+        List<LookupSearchResult> results = new List<LookupSearchResult>();
         
         IdeaBoard__c [] ideas = ((List<IdeaBoard__c>) searchResults[0]);
         for (IdeaBoard__c idea : ideas) {
-            results.add(new AgouraFree.LookupSearchResult(idea.Id, 'IdeaBoard__c', 'standard:drafts', idea.Title__c, 'Idea Board • ' + idea.Name));
+            results.add(new LookupSearchResult(idea.Id, 'IdeaBoard__c', 'standard:drafts', idea.Title__c, 'Idea Board • ' + idea.Name));
         }
         
         RETURN results;
     }
     
     @AuraEnabled
-    public static List<AgouraFree.LookupSearchResult> userOnlySearch(String searchTerm, List<String> selectedIds) {
+    public static List<LookupSearchResult> userOnlySearch(String searchTerm, List<String> selectedIds) {
         searchTerm += '*';        
         List<List<SObject>> searchResults = [FIND :searchTerm IN ALL FIELDS RETURNING
                                              User (Id, Name, Title, SmallPhotoUrl WHERE Id NOT IN :selectedIds ORDER BY Name)                                          
                                              LIMIT :MAX_RESULTS];
         
-        List<AgouraFree.LookupSearchResult> results = new List<AgouraFree.LookupSearchResult>();
+        List<LookupSearchResult> results = new List<LookupSearchResult>();
         
         User [] users = ((List<User>) searchResults[0]);
         for (User user : users) {
-            results.add(new AgouraFree.LookupSearchResult(user.Id, 'User', user.SmallPhotoUrl, user.Name, 'User • ' + user.Title));
+            results.add(new LookupSearchResult(user.Id, 'User', user.SmallPhotoUrl, user.Name, 'User • ' + user.Title));
         }
         
         RETURN results;
     }
     
     @AuraEnabled
-    public static List<AgouraFree.LookupSearchResult> userSearch(String searchTerm, List<String> selectedIds) {
+    public static List<LookupSearchResult> userSearch(String searchTerm, List<String> selectedIds) {
         searchTerm += '*';        
         List<List<SObject>> searchResults = [FIND :searchTerm IN ALL FIELDS RETURNING
                                              User (Id, Name, Title, SmallPhotoUrl WHERE Id NOT IN :selectedIds ORDER BY Name),
                                              Group (Id, Name WHERE Type = 'Regular' AND Id NOT IN :selectedIds ORDER BY Name)                                             
                                              LIMIT :MAX_RESULTS];
         
-        List<AgouraFree.LookupSearchResult> results = new List<AgouraFree.LookupSearchResult>();
+        List<LookupSearchResult> results = new List<LookupSearchResult>();
         
         User [] users = ((List<User>) searchResults[0]);
         for (User user : users) {
-            results.add(new AgouraFree.LookupSearchResult(user.Id, 'User', user.SmallPhotoUrl, user.Name, 'User • ' + user.Title));
+            results.add(new LookupSearchResult(user.Id, 'User', user.SmallPhotoUrl, user.Name, 'User • ' + user.Title));
         }
         
         Group [] groups = ((List<Group>) searchResults[1]);
         for (Group groupItem : groups) {
-            results.add(new AgouraFree.LookupSearchResult(groupItem.Id, 'Group', 'standard:groups', groupItem.Name, 'Group • ' + groupItem.Name));
+            results.add(new LookupSearchResult(groupItem.Id, 'Group', 'standard:groups', groupItem.Name, 'Group • ' + groupItem.Name));
         }
         
         RETURN results;
@@ -194,17 +194,17 @@ public with sharing class ProjectControllerExt {
     }
     
     @AuraEnabled    
-    public static List<AgouraFree.LookupSearchResult> accountSearch(String searchTerm, List<String> selectedIds) {
+    public static List<LookupSearchResult> accountSearch(String searchTerm, List<String> selectedIds) {
         searchTerm += '*';        
         List<List<SObject>> searchResults = [FIND :searchTerm IN ALL FIELDS RETURNING
                                              Account (Id, Name WHERE Id NOT IN :selectedIds ORDER BY Name)
                                              LIMIT :MAX_RESULTS];
         
-        List<AgouraFree.LookupSearchResult> results = new List<AgouraFree.LookupSearchResult>();
+        List<LookupSearchResult> results = new List<LookupSearchResult>();
         
         Account [] accounts = ((List<Account>) searchResults[0]);
         for (Account account : accounts) {
-            results.add(new AgouraFree.LookupSearchResult(account.Id, 'Account', 'standard:account', account.Name, 'Account • ' + account.Id));
+            results.add(new LookupSearchResult(account.Id, 'Account', 'standard:account', account.Name, 'Account • ' + account.Id));
         }
         
         RETURN results;
@@ -284,7 +284,7 @@ public with sharing class ProjectControllerExt {
     
     // Project Users
     @AuraEnabled
-    public static List<AgouraFree.LookupSearchResult> getUsers(Id projectId) {
+    public static List<LookupSearchResult> getUsers(Id projectId) {
         // CRUD and FLS Enforcement
         if (!Schema.sObjectType.Project__c.isAccessible() || 
             !Schema.sObjectType.Project__Share.isAccessible()) {
@@ -329,37 +329,37 @@ public with sharing class ProjectControllerExt {
                                                     WHERE ParentId = :projectId AND AccessLevel = 'Edit')
                                        ORDER BY Name];
         
-        List<AgouraFree.LookupSearchResult> results = new List<AgouraFree.LookupSearchResult>();
+        List<LookupSearchResult> results = new List<LookupSearchResult>();
         
         for (User user : searchResults1) {
-            results.add(new AgouraFree.LookupSearchResult(user.Id, 'User', user.SmallPhotoUrl, user.Name, 'Executive Sponsor'));
+            results.add(new LookupSearchResult(user.Id, 'User', user.SmallPhotoUrl, user.Name, 'Executive Sponsor'));
         }
         for (User user : searchResults2) {
-            results.add(new AgouraFree.LookupSearchResult(user.Id, 'User', user.SmallPhotoUrl, user.Name, 'Product Owner'));
+            results.add(new LookupSearchResult(user.Id, 'User', user.SmallPhotoUrl, user.Name, 'Product Owner'));
         }
         for (User user : searchResults3) {
-            results.add(new AgouraFree.LookupSearchResult(user.Id, 'User', user.SmallPhotoUrl, user.Name, 'Scrum Master'));
+            results.add(new LookupSearchResult(user.Id, 'User', user.SmallPhotoUrl, user.Name, 'Scrum Master'));
         }
         for (User user : searchResults4) {
-            results.add(new AgouraFree.LookupSearchResult(user.Id, 'User', user.SmallPhotoUrl, user.Name, 'Owner'));
+            results.add(new LookupSearchResult(user.Id, 'User', user.SmallPhotoUrl, user.Name, 'Owner'));
         }
         for (User user : searchResults5) {
-            results.add(new AgouraFree.LookupSearchResult(user.Id, 'User', user.SmallPhotoUrl, user.Name, 'Created By'));
+            results.add(new LookupSearchResult(user.Id, 'User', user.SmallPhotoUrl, user.Name, 'Created By'));
         }
         for (User user : searchResults6) {
-            results.add(new AgouraFree.LookupSearchResult(user.Id, 'User', user.SmallPhotoUrl, user.Name, 'Last Modified By'));
+            results.add(new LookupSearchResult(user.Id, 'User', user.SmallPhotoUrl, user.Name, 'Last Modified By'));
         }
         for (User user : searchResults7) {
-            results.add(new AgouraFree.LookupSearchResult(user.Id, 'User', user.SmallPhotoUrl, user.Name, 'Read Access'));
+            results.add(new LookupSearchResult(user.Id, 'User', user.SmallPhotoUrl, user.Name, 'Read Access'));
         }
         for (User user : searchResults8) {
-            results.add(new AgouraFree.LookupSearchResult(user.Id, 'User', user.SmallPhotoUrl, user.Name, 'Edit Access'));
+            results.add(new LookupSearchResult(user.Id, 'User', user.SmallPhotoUrl, user.Name, 'Edit Access'));
         }
         for (Group groupItem : searchResults9) {
-            results.add(new AgouraFree.LookupSearchResult(groupItem.Id, 'Group', 'standard:groups', groupItem.Name, 'Read Access'));
+            results.add(new LookupSearchResult(groupItem.Id, 'Group', 'standard:groups', groupItem.Name, 'Read Access'));
         }
         for (Group groupItem : searchResults10) {
-            results.add(new AgouraFree.LookupSearchResult(groupItem.Id, 'Group', 'standard:groups', groupItem.Name, 'Edit Access'));
+            results.add(new LookupSearchResult(groupItem.Id, 'Group', 'standard:groups', groupItem.Name, 'Edit Access'));
         }
         
         RETURN results;
