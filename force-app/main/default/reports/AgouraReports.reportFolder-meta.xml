@@ -2,7 +2,7 @@
 <ReportFolder xmlns="http://soap.sforce.com/2006/04/metadata">
     <folderShares>
         <accessLevel>Manage</accessLevel>
-        <sharedTo>matt.schuett@sojern.com</sharedTo>
+        <sharedTo>forcedevfree@agourasoftware.com</sharedTo>
         <sharedToType>User</sharedToType>
     </folderShares>
     <name>Agoura Reports</name>
