@@ -36,7 +36,7 @@ public with sharing class ProjectTaskControllerExt {
     }
     
     @AuraEnabled
-    public static List<AgouraFree.LookupSearchResult> getUsers(Id recId) {
+    public static List<LookupSearchResult> getUsers(Id recId) {
         // CRUD and FLS Enforcement
         if (!Schema.sObjectType.ProjectTask__c.isAccessible()) {
                 System.debug('Insufficient access');
