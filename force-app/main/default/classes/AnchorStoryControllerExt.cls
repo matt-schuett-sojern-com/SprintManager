@@ -12,7 +12,7 @@ public with sharing class AnchorStoryControllerExt {
     
     @AuraEnabled
     public static Boolean createAccess() {
-        if (Schema.sObjectType.AgouraFree__AnchorStory__c.isCreateable()) {
+        if (Schema.sObjectType.AnchorStory__c.isCreateable()) {
             return true;
         } else {
             return false;
@@ -20,23 +20,23 @@ public with sharing class AnchorStoryControllerExt {
     }
     
     @AuraEnabled
-    public static List<AgouraFree__AnchorStory__c> getWebPageTitle(Id recId) {
+    public static List<AnchorStory__c> getWebPageTitle(Id recId) {
         // CRUD and FLS Enforcement
-        if (!Schema.sObjectType.AgouraFree__AnchorStory__c.isAccessible()) {
+        if (!Schema.sObjectType.AnchorStory__c.isAccessible()) {
             System.debug('Insufficient access');
             AuraHandledException e = new AuraHandledException('Insufficient access');
             e.setMessage('Insufficient access');
             throw e;
         }
         
-        RETURN [SELECT AgouraFree__Title__c, AgouraFree__Time_Estimate__c
-                FROM AgouraFree__AnchorStory__c WHERE Id = :recId LIMIT 1];  
+        RETURN [SELECT Title__c, Time_Estimate__c
+                FROM AnchorStory__c WHERE Id = :recId LIMIT 1];  
     }
     
     @AuraEnabled
     public static List<AgouraFree.LookupSearchResult> getUsers(Id recId) {
         // CRUD and FLS Enforcement
-        if (!Schema.sObjectType.AgouraFree__AnchorStory__c.isAccessible()) {
+        if (!Schema.sObjectType.AnchorStory__c.isAccessible()) {
                 System.debug('Insufficient access');
                 AuraHandledException e = new AuraHandledException('Insufficient access');
                 e.setMessage('Insufficient access');
@@ -44,13 +44,13 @@ public with sharing class AnchorStoryControllerExt {
             }
         
         List<User> searchResults1 = [SELECT Id, Name, SmallPhotoUrl FROM User
-                                     WHERE Id IN (SELECT CreatedById FROM AgouraFree__AnchorStory__c WHERE Id = :recId)
+                                     WHERE Id IN (SELECT CreatedById FROM AnchorStory__c WHERE Id = :recId)
                                      ORDER BY Name];
         List<User> searchResults2 = [SELECT Id, Name, SmallPhotoUrl FROM User
-                                     WHERE Id IN (SELECT LastModifiedById FROM AgouraFree__AnchorStory__c WHERE Id = :recId)
+                                     WHERE Id IN (SELECT LastModifiedById FROM AnchorStory__c WHERE Id = :recId)
                                      ORDER BY Name];
         List<User> searchResults3 = [SELECT Id, Name, SmallPhotoUrl FROM User
-                                     WHERE Id IN (SELECT OwnerId FROM AgouraFree__AnchorStory__c WHERE Id = :recId)
+                                     WHERE Id IN (SELECT OwnerId FROM AnchorStory__c WHERE Id = :recId)
                                      ORDER BY Name];
         
         List<AgouraFree.LookupSearchResult> results = new List<AgouraFree.LookupSearchResult>();
@@ -71,7 +71,7 @@ public with sharing class AnchorStoryControllerExt {
     @AuraEnabled    
     public static List<AgouraFree.LookupSearchResult> anchorStorySearch(String searchTerm, List<String> selectedIds, String recStr) {
         // CRUD and FLS Enforcement
-        if (!Schema.sObjectType.AgouraFree__AnchorStory__c.isAccessible()) {
+        if (!Schema.sObjectType.AnchorStory__c.isAccessible()) {
             System.debug('Insufficient access');
             AuraHandledException e = new AuraHandledException('Insufficient access');
             e.setMessage('Insufficient access');
@@ -80,57 +80,57 @@ public with sharing class AnchorStoryControllerExt {
         
         searchTerm += '*';        
         List<List<SObject>> searchResults = [FIND :searchTerm IN ALL FIELDS RETURNING
-                                             AgouraFree__AnchorStory__c (Id, Name, AgouraFree__Title__c
+                                             AnchorStory__c (Id, Name, Title__c
                                                                      WHERE Id NOT IN :selectedIds AND Id != :recStr
-                                                                     ORDER BY AgouraFree__Title__c) LIMIT 12];
+                                                                     ORDER BY Title__c) LIMIT 12];
         
         List<AgouraFree.LookupSearchResult> results = new List<AgouraFree.LookupSearchResult>();
         
-        AgouraFree__AnchorStory__c [] stories = ((List<AgouraFree__AnchorStory__c>) searchResults[0]);
-        for (AgouraFree__AnchorStory__c story : stories) {
-            results.add(new AgouraFree.LookupSearchResult(story.Id, 'AgouraFree__AnchorStory__c', 'standard:task', story.AgouraFree__Title__c, 'Anchor Story • ' + story.Name));
+        AnchorStory__c [] stories = ((List<AnchorStory__c>) searchResults[0]);
+        for (AnchorStory__c story : stories) {
+            results.add(new AgouraFree.LookupSearchResult(story.Id, 'AnchorStory__c', 'standard:task', story.Title__c, 'Anchor Story • ' + story.Name));
         }
         
         RETURN results;
     }
     
     @AuraEnabled
-    public static List<AgouraFree__AnchorStory__c> getMasterTask(Id recId) {
+    public static List<AnchorStory__c> getMasterTask(Id recId) {
         // CRUD and FLS Enforcement
-        if (!Schema.sObjectType.AgouraFree__AnchorStory__c.isAccessible()) {
+        if (!Schema.sObjectType.AnchorStory__c.isAccessible()) {
             System.debug('Insufficient access');
             AuraHandledException e = new AuraHandledException('Insufficient access');
             e.setMessage('Insufficient access');
             throw e;
         }
         
-        RETURN [SELECT AgouraFree__Master_Task__c, AgouraFree__Master_Task__r.Name, AgouraFree__Master_Task__r.AgouraFree__Title__c
-                FROM AgouraFree__AnchorStory__c
+        RETURN [SELECT Master_Task__c, Master_Task__r.Name, Master_Task__r.Title__c
+                FROM AnchorStory__c
                 WHERE Id = :recId LIMIT 1]; 
     }
     
     @AuraEnabled
-    public static List<AgouraFree__AnchorStory__c> getSubTasks(Id recId) {
+    public static List<AnchorStory__c> getSubTasks(Id recId) {
         // CRUD and FLS Enforcement
-        if (!Schema.sObjectType.AgouraFree__AnchorStory__c.isAccessible()) {
+        if (!Schema.sObjectType.AnchorStory__c.isAccessible()) {
             System.debug('Insufficient access');
             AuraHandledException e = new AuraHandledException('Insufficient access');
             e.setMessage('Insufficient access');
             throw e;
         }
         
-        RETURN [SELECT Id, Name, AgouraFree__Title__c
-                FROM AgouraFree__AnchorStory__c
-                WHERE AgouraFree__Master_Task__c = :recId]; 
+        RETURN [SELECT Id, Name, Title__c
+                FROM AnchorStory__c
+                WHERE Master_Task__c = :recId]; 
     }
     
     @AuraEnabled
     public static Id createCloneAnchorStory(Id recId) {
         // CRUD and FLS Enforcement
-        String [] checkFields = new String [] {'AgouraFree__Acceptance_Criteria__c', 'AgouraFree__Comments__c', 'AgouraFree__Components__c', 'AgouraFree__Dependencies__c', 
-            'AgouraFree__Description__c', 'AgouraFree__Master_Task__c', 'AgouraFree__Points__c', 'AgouraFree__Priority__c', 
-            'AgouraFree__Search_Terms__c', 'AgouraFree__Time_Estimate__c', 'AgouraFree__Value__c', 'AgouraFree__Title__c', 'AgouraFree__Type__c', 'AgouraFree__URL__c' };
-                Map<String,Schema.SObjectField> m = Schema.SObjectType.AgouraFree__AnchorStory__c.fields.getMap();
+        String [] checkFields = new String [] {'Acceptance_Criteria__c', 'Comments__c', 'Components__c', 'Dependencies__c', 
+            'Description__c', 'Master_Task__c', 'Points__c', 'Priority__c', 
+            'Search_Terms__c', 'Time_Estimate__c', 'Value__c', 'Title__c', 'Type__c', 'URL__c' };
+                Map<String,Schema.SObjectField> m = Schema.SObjectType.AnchorStory__c.fields.getMap();
         for (String fieldToCheck : checkFields) {
             if (!m.get(fieldToCheck).getDescribe().isCreateable() || !m.get(fieldToCheck).getDescribe().isAccessible()) {
                 System.debug('Insufficient access');
@@ -140,38 +140,38 @@ public with sharing class AnchorStoryControllerExt {
             }
         }
         
-        AgouraFree__AnchorStory__c anchorStory = [SELECT AgouraFree__Acceptance_Criteria__c, AgouraFree__Comments__c, AgouraFree__Components__c, AgouraFree__Dependencies__c, 
-                                              AgouraFree__Description__c, AgouraFree__Master_Task__c, AgouraFree__Points__c, AgouraFree__Priority__c, AgouraFree__Search_Terms__c, 
-                                              AgouraFree__Time_Estimate__c, AgouraFree__Value__c, AgouraFree__Title__c, AgouraFree__Type__c, AgouraFree__URL__c                
-                                              FROM AgouraFree__AnchorStory__c
+        AnchorStory__c anchorStory = [SELECT Acceptance_Criteria__c, Comments__c, Components__c, Dependencies__c, 
+                                              Description__c, Master_Task__c, Points__c, Priority__c, Search_Terms__c, 
+                                              Time_Estimate__c, Value__c, Title__c, Type__c, URL__c                
+                                              FROM AnchorStory__c
                                               WHERE Id = :recId
                                               LIMIT 1];  
-        String titleStr = anchorStory.AgouraFree__Title__c;
+        String titleStr = anchorStory.Title__c;
         
-        AgouraFree__AnchorStory__c newAnchorStory = new AgouraFree__AnchorStory__c (
-            AgouraFree__Title__c = titleStr.left(248) + ' (Copy)',
-            AgouraFree__Acceptance_Criteria__c = anchorStory.AgouraFree__Acceptance_Criteria__c,
-            AgouraFree__Comments__c = anchorStory.AgouraFree__Comments__c,
-            AgouraFree__Components__c = anchorStory.AgouraFree__Components__c,
-            AgouraFree__Dependencies__c = anchorStory.AgouraFree__Dependencies__c,
-            AgouraFree__Description__c = anchorStory.AgouraFree__Description__c,
-            AgouraFree__Master_Task__c = anchorStory.AgouraFree__Master_Task__c,
-            AgouraFree__Points__c = anchorStory.AgouraFree__Points__c,
-            AgouraFree__Priority__c = anchorStory.AgouraFree__Priority__c,
-            AgouraFree__Search_Terms__c = anchorStory.AgouraFree__Search_Terms__c,
-            AgouraFree__Time_Estimate__c = anchorStory.AgouraFree__Time_Estimate__c,
-            AgouraFree__Type__c = anchorStory.AgouraFree__Type__c,
-            AgouraFree__URL__c = anchorStory.AgouraFree__URL__c,
-            AgouraFree__Value__c  = anchorStory.AgouraFree__Value__c );
+        AnchorStory__c newAnchorStory = new AnchorStory__c (
+            Title__c = titleStr.left(248) + ' (Copy)',
+            Acceptance_Criteria__c = anchorStory.Acceptance_Criteria__c,
+            Comments__c = anchorStory.Comments__c,
+            Components__c = anchorStory.Components__c,
+            Dependencies__c = anchorStory.Dependencies__c,
+            Description__c = anchorStory.Description__c,
+            Master_Task__c = anchorStory.Master_Task__c,
+            Points__c = anchorStory.Points__c,
+            Priority__c = anchorStory.Priority__c,
+            Search_Terms__c = anchorStory.Search_Terms__c,
+            Time_Estimate__c = anchorStory.Time_Estimate__c,
+            Type__c = anchorStory.Type__c,
+            URL__c = anchorStory.URL__c,
+            Value__c  = anchorStory.Value__c );
         insert newAnchorStory;
         RETURN newAnchorStory.Id;
     }
     
     @AuraEnabled
-    public static AgouraFree__AnchorStory__c updateDocumentOwner(Id recId, Id userId) {
+    public static AnchorStory__c updateDocumentOwner(Id recId, Id userId) {
         // CRUD and FLS Enforcement
         String [] checkFields = new String [] {'OwnerId'};
-            Map<String,Schema.SObjectField> m = Schema.SObjectType.AgouraFree__AnchorStory__c.fields.getMap();
+            Map<String,Schema.SObjectField> m = Schema.SObjectType.AnchorStory__c.fields.getMap();
         for (String fieldToCheck : checkFields) {
             if (!m.get(fieldToCheck).getDescribe().isUpdateable()) {
                 System.debug('Insufficient access');
@@ -181,7 +181,7 @@ public with sharing class AnchorStoryControllerExt {
             }
         }
         
-        AgouraFree__AnchorStory__c item = [SELECT Id, OwnerId FROM AgouraFree__AnchorStory__c WHERE Id = :recId];
+        AnchorStory__c item = [SELECT Id, OwnerId FROM AnchorStory__c WHERE Id = :recId];
         item.OwnerId = userId;
         update item;
         RETURN item;
@@ -207,7 +207,7 @@ public with sharing class AnchorStoryControllerExt {
     @AuraEnabled    
     public static List<AgouraFree.LookupSearchResult> projectSearch(String searchTerm, List<String> selectedIds) {
         // CRUD and FLS Enforcement
-        if (!Schema.sObjectType.AgouraFree__Project__c.isAccessible()) {
+        if (!Schema.sObjectType.Project__c.isAccessible()) {
             System.debug('Insufficient access');
             AuraHandledException e = new AuraHandledException('Insufficient access');
             e.setMessage('Insufficient access');
@@ -216,14 +216,14 @@ public with sharing class AnchorStoryControllerExt {
         
         searchTerm += '*';        
         List<List<SObject>> searchResults = [FIND :searchTerm IN ALL FIELDS RETURNING
-                                             AgouraFree__Project__c (Id, Name, AgouraFree__Title__c WHERE Id NOT IN :selectedIds ORDER BY AgouraFree__Title__c)
+                                             Project__c (Id, Name, Title__c WHERE Id NOT IN :selectedIds ORDER BY Title__c)
                                              LIMIT :MAX_RESULTS];
         
         List<AgouraFree.LookupSearchResult> results = new List<AgouraFree.LookupSearchResult>();
         
-        AgouraFree__Project__c [] projects = ((List<AgouraFree__Project__c>) searchResults[0]);
-        for (AgouraFree__Project__c project : projects) {
-            results.add(new AgouraFree.LookupSearchResult(project.Id, 'AgouraFree__Project__c', 'standard:drafts', project.AgouraFree__Title__c, 'Project • ' + project.Name));
+        Project__c [] projects = ((List<Project__c>) searchResults[0]);
+        for (Project__c project : projects) {
+            results.add(new AgouraFree.LookupSearchResult(project.Id, 'Project__c', 'standard:drafts', project.Title__c, 'Project • ' + project.Name));
         }
         
         RETURN results;
@@ -232,37 +232,37 @@ public with sharing class AnchorStoryControllerExt {
     @AuraEnabled
     public static Id doCreateProjectTask(Id recId, Id projectId) {  
         // CRUD and FLS Enforcement
-        if (!Schema.sObjectType.AgouraFree__ProjectTask__c.isCreateable() ||
-            !Schema.sObjectType.AgouraFree__ProjectTask__c.fields.AgouraFree__Accept__c.isCreateable() ||
-            !Schema.sObjectType.AgouraFree__ProjectTask__c.fields.AgouraFree__Comments__c.isCreateable() ||
-            !Schema.sObjectType.AgouraFree__ProjectTask__c.fields.AgouraFree__Components__c.isCreateable() ||
-            !Schema.sObjectType.AgouraFree__ProjectTask__c.fields.AgouraFree__Dependencies__c.isCreateable() ||
-            !Schema.sObjectType.AgouraFree__ProjectTask__c.fields.AgouraFree__Description__c.isCreateable() ||
-            !Schema.sObjectType.AgouraFree__ProjectTask__c.fields.AgouraFree__Formatted_Status__c.isCreateable() ||
-            !Schema.sObjectType.AgouraFree__ProjectTask__c.fields.AgouraFree__Order__c.isCreateable() ||
-            !Schema.sObjectType.AgouraFree__ProjectTask__c.fields.AgouraFree__Points__c.isCreateable() ||
-            !Schema.sObjectType.AgouraFree__ProjectTask__c.fields.AgouraFree__Priority__c.isCreateable() ||
-            !Schema.sObjectType.AgouraFree__ProjectTask__c.fields.AgouraFree__Project__c.isCreateable() ||
-            !Schema.sObjectType.AgouraFree__ProjectTask__c.fields.AgouraFree__Status__c.isCreateable() ||
-            !Schema.sObjectType.AgouraFree__ProjectTask__c.fields.AgouraFree__Task_Number__c.isCreateable() ||
-            !Schema.sObjectType.AgouraFree__ProjectTask__c.fields.AgouraFree__Task_Number_Int__c.isCreateable() ||
-            !Schema.sObjectType.AgouraFree__ProjectTask__c.fields.AgouraFree__Time_Estimate__c.isCreateable() ||
-            !Schema.sObjectType.AgouraFree__ProjectTask__c.fields.AgouraFree__Title__c.isCreateable() ||
-            !Schema.sObjectType.AgouraFree__ProjectTask__c.fields.AgouraFree__Type__c.isCreateable() ||
-            !Schema.sObjectType.AgouraFree__ProjectTask__c.fields.AgouraFree__URL__c.isCreateable() ||
-            !Schema.sObjectType.AgouraFree__ProjectTask__c.fields.AgouraFree__Value__c.isCreateable() ||            
-            !Schema.sObjectType.AgouraFree__AnchorStory__c.fields.AgouraFree__Acceptance_Criteria__c.isAccessible() ||
-            !Schema.sObjectType.AgouraFree__AnchorStory__c.fields.AgouraFree__Comments__c.isAccessible() ||
-            !Schema.sObjectType.AgouraFree__AnchorStory__c.fields.AgouraFree__Components__c.isAccessible() ||
-            !Schema.sObjectType.AgouraFree__AnchorStory__c.fields.AgouraFree__Dependencies__c.isAccessible() ||
-            !Schema.sObjectType.AgouraFree__AnchorStory__c.fields.AgouraFree__Description__c.isAccessible() ||           
-            !Schema.sObjectType.AgouraFree__AnchorStory__c.fields.AgouraFree__Priority__c.isAccessible() ||            
-            !Schema.sObjectType.AgouraFree__AnchorStory__c.fields.AgouraFree__Time_Estimate__c.isAccessible() ||
-            !Schema.sObjectType.AgouraFree__AnchorStory__c.fields.AgouraFree__Title__c.isAccessible() ||
-            !Schema.sObjectType.AgouraFree__AnchorStory__c.fields.AgouraFree__Type__c.isAccessible() ||
-            !Schema.sObjectType.AgouraFree__AnchorStory__c.fields.AgouraFree__URL__c.isAccessible() ||
-            !Schema.sObjectType.AgouraFree__AnchorStory__c.fields.AgouraFree__Value__c.isAccessible() ||                    
-            !Schema.sObjectType.AgouraFree__Project__c.isAccessible())
+        if (!Schema.sObjectType.ProjectTask__c.isCreateable() ||
+            !Schema.sObjectType.ProjectTask__c.fields.Accept__c.isCreateable() ||
+            !Schema.sObjectType.ProjectTask__c.fields.Comments__c.isCreateable() ||
+            !Schema.sObjectType.ProjectTask__c.fields.Components__c.isCreateable() ||
+            !Schema.sObjectType.ProjectTask__c.fields.Dependencies__c.isCreateable() ||
+            !Schema.sObjectType.ProjectTask__c.fields.Description__c.isCreateable() ||
+            !Schema.sObjectType.ProjectTask__c.fields.Formatted_Status__c.isCreateable() ||
+            !Schema.sObjectType.ProjectTask__c.fields.Order__c.isCreateable() ||
+            !Schema.sObjectType.ProjectTask__c.fields.Points__c.isCreateable() ||
+            !Schema.sObjectType.ProjectTask__c.fields.Priority__c.isCreateable() ||
+            !Schema.sObjectType.ProjectTask__c.fields.Project__c.isCreateable() ||
+            !Schema.sObjectType.ProjectTask__c.fields.Status__c.isCreateable() ||
+            !Schema.sObjectType.ProjectTask__c.fields.Task_Number__c.isCreateable() ||
+            !Schema.sObjectType.ProjectTask__c.fields.Task_Number_Int__c.isCreateable() ||
+            !Schema.sObjectType.ProjectTask__c.fields.Time_Estimate__c.isCreateable() ||
+            !Schema.sObjectType.ProjectTask__c.fields.Title__c.isCreateable() ||
+            !Schema.sObjectType.ProjectTask__c.fields.Type__c.isCreateable() ||
+            !Schema.sObjectType.ProjectTask__c.fields.URL__c.isCreateable() ||
+            !Schema.sObjectType.ProjectTask__c.fields.Value__c.isCreateable() ||            
+            !Schema.sObjectType.AnchorStory__c.fields.Acceptance_Criteria__c.isAccessible() ||
+            !Schema.sObjectType.AnchorStory__c.fields.Comments__c.isAccessible() ||
+            !Schema.sObjectType.AnchorStory__c.fields.Components__c.isAccessible() ||
+            !Schema.sObjectType.AnchorStory__c.fields.Dependencies__c.isAccessible() ||
+            !Schema.sObjectType.AnchorStory__c.fields.Description__c.isAccessible() ||           
+            !Schema.sObjectType.AnchorStory__c.fields.Priority__c.isAccessible() ||            
+            !Schema.sObjectType.AnchorStory__c.fields.Time_Estimate__c.isAccessible() ||
+            !Schema.sObjectType.AnchorStory__c.fields.Title__c.isAccessible() ||
+            !Schema.sObjectType.AnchorStory__c.fields.Type__c.isAccessible() ||
+            !Schema.sObjectType.AnchorStory__c.fields.URL__c.isAccessible() ||
+            !Schema.sObjectType.AnchorStory__c.fields.Value__c.isAccessible() ||                    
+            !Schema.sObjectType.Project__c.isAccessible())
         {
             System.debug('Insufficient access');
             AuraHandledException e = new AuraHandledException('Insufficient access');
@@ -270,47 +270,47 @@ public with sharing class AnchorStoryControllerExt {
             throw e;
         }
         
-        AgouraFree__AnchorStory__c anchorStory = [SELECT AgouraFree__Acceptance_Criteria__c, AgouraFree__Comments__c, AgouraFree__Components__c, AgouraFree__Dependencies__c, 
-                                              AgouraFree__Description__c, AgouraFree__Points__c, AgouraFree__Priority__c, AgouraFree__Time_Estimate__c, AgouraFree__Value__c, 
-                                              AgouraFree__Title__c, AgouraFree__Type__c, AgouraFree__URL__c                
-                                              FROM AgouraFree__AnchorStory__c
+        AnchorStory__c anchorStory = [SELECT Acceptance_Criteria__c, Comments__c, Components__c, Dependencies__c, 
+                                              Description__c, Points__c, Priority__c, Time_Estimate__c, Value__c, 
+                                              Title__c, Type__c, URL__c                
+                                              FROM AnchorStory__c
                                               WHERE Id = :recId
                                               LIMIT 1]; 
-        AggregateResult[] taskOrderTotal = [SELECT MAX(AgouraFree__Order__c)lastNumber
-                                            FROM AgouraFree__ProjectTask__c 
-                                            WHERE AgouraFree__Project__c = :projectId];                 
+        AggregateResult[] taskOrderTotal = [SELECT MAX(Order__c)lastNumber
+                                            FROM ProjectTask__c 
+                                            WHERE Project__c = :projectId];                 
         decimal lastOrderNumber = taskOrderTotal[0].get('lastNumber') == null ? 0 : (decimal)taskOrderTotal[0].get('lastNumber'); 
         decimal nextOrderNumber = lastOrderNumber + 1;
-        list<AgouraFree__Project__c> Project = [SELECT AgouraFree__Project_Abbreviation__c 
-                                            FROM AgouraFree__Project__c 
+        list<Project__c> Project = [SELECT Project_Abbreviation__c 
+                                            FROM Project__c 
                                             WHERE Id = :projectId 
-                                            ORDER BY AgouraFree__Project_Abbreviation__c DESC LIMIT 1];
-        string projectAbbreviation = Project[0].AgouraFree__Project_Abbreviation__c;
-        AggregateResult[] taskTotal = [SELECT MAX(AgouraFree__Task_Number_Int__c)lastNumber
-                                       FROM AgouraFree__ProjectTask__c 
-                                       WHERE AgouraFree__Project__c = :projectId];                 
+                                            ORDER BY Project_Abbreviation__c DESC LIMIT 1];
+        string projectAbbreviation = Project[0].Project_Abbreviation__c;
+        AggregateResult[] taskTotal = [SELECT MAX(Task_Number_Int__c)lastNumber
+                                       FROM ProjectTask__c 
+                                       WHERE Project__c = :projectId];                 
         decimal lastNumber = taskTotal[0].get('lastNumber') == null ? 0 : (decimal)taskTotal[0].get('lastNumber');                
         Integer nextTaskNumber = Integer.valueOf(lastNumber) + 1; 
  
-        AgouraFree__ProjectTask__c newProjectTask = new AgouraFree__ProjectTask__c (
-            AgouraFree__Accept__c = anchorStory.AgouraFree__Acceptance_Criteria__c,
-            AgouraFree__Comments__c = anchorStory.AgouraFree__Comments__c,
-            AgouraFree__Components__c = anchorStory.AgouraFree__Components__c,
-            AgouraFree__Dependencies__c = anchorStory.AgouraFree__Dependencies__c,
-            AgouraFree__Description__c = anchorStory.AgouraFree__Description__c,
-            AgouraFree__Formatted_Status__c = 'open',
-            AgouraFree__Order__c = nextOrderNumber,
-            AgouraFree__Points__c = anchorStory.AgouraFree__Points__c,
-            AgouraFree__Priority__c = anchorStory.AgouraFree__Priority__c,
-            AgouraFree__Project__c = projectId,
-            AgouraFree__Status__c = 'Open',
-            AgouraFree__Task_Number__c = projectAbbreviation + '-' + nextTaskNumber,
-            AgouraFree__Task_Number_Int__c = nextTaskNumber,
-            AgouraFree__Time_Estimate__c = anchorStory.AgouraFree__Time_Estimate__c,
-            AgouraFree__Title__c = anchorStory.AgouraFree__Title__c,
-            AgouraFree__Type__c = anchorStory.AgouraFree__Type__c,
-            AgouraFree__URL__c = anchorStory.AgouraFree__URL__c,
-            AgouraFree__Value__c = anchorStory.AgouraFree__Value__c);
+        ProjectTask__c newProjectTask = new ProjectTask__c (
+            Accept__c = anchorStory.Acceptance_Criteria__c,
+            Comments__c = anchorStory.Comments__c,
+            Components__c = anchorStory.Components__c,
+            Dependencies__c = anchorStory.Dependencies__c,
+            Description__c = anchorStory.Description__c,
+            Formatted_Status__c = 'open',
+            Order__c = nextOrderNumber,
+            Points__c = anchorStory.Points__c,
+            Priority__c = anchorStory.Priority__c,
+            Project__c = projectId,
+            Status__c = 'Open',
+            Task_Number__c = projectAbbreviation + '-' + nextTaskNumber,
+            Task_Number_Int__c = nextTaskNumber,
+            Time_Estimate__c = anchorStory.Time_Estimate__c,
+            Title__c = anchorStory.Title__c,
+            Type__c = anchorStory.Type__c,
+            URL__c = anchorStory.URL__c,
+            Value__c = anchorStory.Value__c);
 
         insert newProjectTask;   
         RETURN newProjectTask.Id;
