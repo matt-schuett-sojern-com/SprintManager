@@ -64,7 +64,7 @@ public with sharing class SprintControllerExt {
     }
     
     @AuraEnabled
-    public static List<AgouraFree.LookupSearchResult> getUsers(Id recId) {
+    public static List<LookupSearchResult> getUsers(Id recId) {
         // CRUD and FLS Enforcement
         if (!Schema.sObjectType.Sprint__c.isAccessible()) {
                 System.debug('Insufficient access');
@@ -80,13 +80,13 @@ public with sharing class SprintControllerExt {
                                      WHERE Id IN (SELECT LastModifiedById FROM Sprint__c WHERE Id = :recId)
                                      ORDER BY Name];
         
-        List<AgouraFree.LookupSearchResult> results = new List<AgouraFree.LookupSearchResult>();
+        List<LookupSearchResult> results = new List<LookupSearchResult>();
         
         for (User user : searchResults1) {
-            results.add(new AgouraFree.LookupSearchResult(user.Id, 'User', user.SmallPhotoUrl, user.Name, 'Created By'));
+            results.add(new LookupSearchResult(user.Id, 'User', user.SmallPhotoUrl, user.Name, 'Created By'));
         }
         for (User user : searchResults2) {
-            results.add(new AgouraFree.LookupSearchResult(user.Id, 'User', user.SmallPhotoUrl, user.Name, 'Last Modified By'));
+            results.add(new LookupSearchResult(user.Id, 'User', user.SmallPhotoUrl, user.Name, 'Last Modified By'));
         }
         
         RETURN results;
@@ -142,7 +142,7 @@ public with sharing class SprintControllerExt {
     }
     
     @AuraEnabled    
-    public static List<AgouraFree.LookupSearchResult> projectSearch(String searchTerm, List<String> selectedIds) {
+    public static List<LookupSearchResult> projectSearch(String searchTerm, List<String> selectedIds) {
         // CRUD and FLS Enforcement
         if (!Schema.sObjectType.Project__c.isAccessible()) {
             System.debug('Insufficient access');
@@ -156,11 +156,11 @@ public with sharing class SprintControllerExt {
                                              Project__c (Id, Name, Title__c WHERE Id NOT IN :selectedIds ORDER BY Title__c)
                                              LIMIT :MAX_RESULTS];
         
-        List<AgouraFree.LookupSearchResult> results = new List<AgouraFree.LookupSearchResult>();
+        List<LookupSearchResult> results = new List<LookupSearchResult>();
         
         Project__c [] projects = ((List<Project__c>) searchResults[0]);
         for (Project__c project : projects) {
-            results.add(new AgouraFree.LookupSearchResult(project.Id, 'Project__c', 'standard:drafts', project.Title__c, 'Project • ' + project.Name));
+            results.add(new LookupSearchResult(project.Id, 'Project__c', 'standard:drafts', project.Title__c, 'Project • ' + project.Name));
         }
         
         RETURN results;
@@ -460,15 +460,15 @@ public with sharing class SprintControllerExt {
     }
     
     @AuraEnabled
-    public static List<AgouraFree.LookupSearchResult> getAssignedToList(Id recId) {
+    public static List<LookupSearchResult> getAssignedToList(Id recId) {
         List<User> searchResults1 = [SELECT Id, Name, SmallPhotoUrl FROM User
                                      WHERE Id IN (SELECT Assigned_To__c FROM ProjectTask__c WHERE Sprint__c = :recId)
                                      ORDER BY Name];
         
-        List<AgouraFree.LookupSearchResult> results = new List<AgouraFree.LookupSearchResult>();
+        List<LookupSearchResult> results = new List<LookupSearchResult>();
         
         for (User user : searchResults1) {
-            results.add(new AgouraFree.LookupSearchResult(user.Id, 'User', user.SmallPhotoUrl, user.Name, 'Assigned To'));
+            results.add(new LookupSearchResult(user.Id, 'User', user.SmallPhotoUrl, user.Name, 'Assigned To'));
         }
         
         RETURN results;
