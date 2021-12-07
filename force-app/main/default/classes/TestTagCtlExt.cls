@@ -2,12 +2,12 @@
 public class TestTagCtlExt {
    
     static testMethod void test_recordAccess() {
-        AgouraFree__Tag__c testTag = new AgouraFree__Tag__c(Name='Test Tag');
+        Tag__c testTag = new Tag__c(Name='Test Tag');
         insert testTag;
         Id userId = UserInfo.getUserId();
         
         Test.startTest();
-        List<UserRecordAccess> results = AgouraFree.TagControllerExt.recordAccess(testTag.Id);
+        List<UserRecordAccess> results = TagControllerExt.recordAccess(testTag.Id);
         Test.stopTest();
         
         System.assertEquals(1, results.size());
@@ -15,15 +15,15 @@ public class TestTagCtlExt {
     }
     
     static testMethod void test_getWebPageTitle() {
-        AgouraFree__Tag__c testTag = new AgouraFree__Tag__c(Name='Test Tag');
+        Tag__c testTag = new Tag__c(Name='Test Tag');
         insert testTag;    
         User testUser = createTestUser('userT1','standarduserT1@agourasoftware.com','Testing T1','standarduserT1@agourasoftware.com'); 
         
         Test.startTest();
-        List<AgouraFree__Tag__c> results = AgouraFree.TagControllerExt.getWebPageTitle(testTag.Id);
+        List<Tag__c> results = TagControllerExt.getWebPageTitle(testTag.Id);
         System.runas(testUser) {
             try {
-                List<AgouraFree__Tag__c> accessResult = AgouraFree.TagControllerExt.getWebPageTitle(testTag.Id);
+                List<Tag__c> accessResult = TagControllerExt.getWebPageTitle(testTag.Id);
             } catch (AuraHandledException e) {
                 System.assertEquals('Insufficient access', e.getMessage());
             }
@@ -36,15 +36,15 @@ public class TestTagCtlExt {
     
     static testMethod void test_getUsers() {
         Id userId = UserInfo.getUserId();
-        AgouraFree__Tag__c testTag = new AgouraFree__Tag__c(Name='Test Tag');
+        Tag__c testTag = new Tag__c(Name='Test Tag');
         insert testTag; 
         User testUser = createTestUser('userT2','standarduserT2@agourasoftware.com','Testing T2','standarduserT2@agourasoftware.com'); 
         
         Test.startTest();
-        List<AgouraFree.LookupSearchResult> results = AgouraFree.TagControllerExt.getUsers(testTag.Id);
+        List<LookupSearchResult> results = TagControllerExt.getUsers(testTag.Id);
         System.runas(testUser) {
             try {
-                List<AgouraFree.LookupSearchResult> accessResult = AgouraFree.TagControllerExt.getUsers(testTag.Id); 
+                List<LookupSearchResult> accessResult = TagControllerExt.getUsers(testTag.Id); 
             } catch (AuraHandledException e) {
                 System.assertEquals('Insufficient access', e.getMessage());
             }
@@ -59,16 +59,16 @@ public class TestTagCtlExt {
     
     static testMethod void test_update_document_owner() {
         Id userId = UserInfo.getUserId();
-        AgouraFree__Tag__c testTag = new AgouraFree__Tag__c(Name='Test Tag');
+        Tag__c testTag = new Tag__c(Name='Test Tag');
         insert testTag;
         User testUser = createAdminUser('userT3','standarduserT3@agourasoftware.com','Testing T3','standarduserT3@agourasoftware.com'); 
         User testUser2 = createTestUser('userT4','standarduserT4@agourasoftware.com','Testing T4','standarduserT4@agourasoftware.com'); 
         
         Test.startTest();
-        AgouraFree__Tag__c updateTest = AgouraFree.TagControllerExt.updateDocumentOwner(testTag.Id, testUser.id);
+        Tag__c updateTest = TagControllerExt.updateDocumentOwner(testTag.Id, testUser.id);
         System.runas(testUser2) {
             try {
-                AgouraFree__Tag__c accessResult = AgouraFree.TagControllerExt.updateDocumentOwner(testTag.Id, testUser2.id);
+                Tag__c accessResult = TagControllerExt.updateDocumentOwner(testTag.Id, testUser2.id);
             } catch (AuraHandledException e) {
                 System.assertEquals('Insufficient access', e.getMessage());
             }
@@ -86,7 +86,7 @@ public class TestTagCtlExt {
         List<String> selectedIds = new List<String>();
         
         Test.startTest();
-        List<AgouraFree.LookupSearchResult> results = AgouraFree.TagControllerExt.userOnlySearch('Test', selectedIds);
+        List<LookupSearchResult> results = TagControllerExt.userOnlySearch('Test', selectedIds);
         Test.stopTest();
         
         System.assertEquals(1, results.size());
@@ -104,7 +104,7 @@ public class TestTagCtlExt {
         selectedIds.add(testUser2.Id);
         
         Test.startTest();
-        List<AgouraFree.LookupSearchResult> results = AgouraFree.TagControllerExt.userOnlySearch('Testing', selectedIds);
+        List<LookupSearchResult> results = TagControllerExt.userOnlySearch('Testing', selectedIds);
         Test.stopTest();
         
         System.assertEquals(1, results.size());
@@ -115,9 +115,9 @@ public class TestTagCtlExt {
         User testUser = createTestUser('userT8','standarduserT8@agourasoftware.com','Testing T8','standarduserT8@agourasoftware.com');  
         
         Test.startTest();
-        Boolean results = AgouraFree.TagControllerExt.createAccess();
+        Boolean results = TagControllerExt.createAccess();
         System.runas(testUser) {            
-            Boolean accessResult = AgouraFree.TagControllerExt.createAccess(); 
+            Boolean accessResult = TagControllerExt.createAccess(); 
             System.assertEquals(False, accessResult);      
         }
 		Test.stopTest();
@@ -127,7 +127,7 @@ public class TestTagCtlExt {
     
     static testMethod void test_hasProjectObject() {      
         Test.startTest();
-        Boolean result = AgouraFree.TagControllerExt.hasProjectObject();
+        Boolean result = TagControllerExt.hasProjectObject();
         Test.stopTest();
         
         System.assert(result==true || result==false);
