@@ -3,11 +3,11 @@ public class TestViewCtlExt {
 
     static testMethod void test_getStatusKeys() {        
         Test.startTest();
-        List<String> results1 = AgouraFree.ViewControllerExt.getStatusKeys('Home');
-        List<String> results2 = AgouraFree.ViewControllerExt.getStatusKeys('Idea Boards');
-        List<String> results3 = AgouraFree.ViewControllerExt.getStatusKeys('Project Tasks');
-        List<String> results4 = AgouraFree.ViewControllerExt.getStatusKeys('Projects');
-        List<String> results5 = AgouraFree.ViewControllerExt.getStatusKeys('Sprints');
+        List<String> results1 = ViewControllerExt.getStatusKeys('Home');
+        List<String> results2 = ViewControllerExt.getStatusKeys('Idea Boards');
+        List<String> results3 = ViewControllerExt.getStatusKeys('Project Tasks');
+        List<String> results4 = ViewControllerExt.getStatusKeys('Projects');
+        List<String> results5 = ViewControllerExt.getStatusKeys('Sprints');
         Test.stopTest();
         
         System.assertEquals(7, results1.size());
@@ -39,81 +39,81 @@ public class TestViewCtlExt {
         List<ViewRecord> viewItems12 = new List<ViewRecord>{};
         List<ViewRecord> viewItems13 = new List<ViewRecord>{};
         List<ViewRecord> viewItems14 = new List<ViewRecord>{};
-        AgouraFree__IdeaBoard__c testIdeaBoard = new AgouraFree__IdeaBoard__c(AgouraFree__Title__c='Test Idea Board 1', 
-                                                                      AgouraFree__Status__c='Draft');    
+        IdeaBoard__c testIdeaBoard = new IdeaBoard__c(Title__c='Test Idea Board 1', 
+                                                                      Status__c='Draft');    
         insert testIdeaBoard;
-        AgouraFree__IdeaBoard__c testIdeaBoard2 = new AgouraFree__IdeaBoard__c(AgouraFree__Title__c='Test Idea Board 2', 
-                                                                       AgouraFree__Status__c='Draft');        
+        IdeaBoard__c testIdeaBoard2 = new IdeaBoard__c(Title__c='Test Idea Board 2', 
+                                                                       Status__c='Draft');        
         insert testIdeaBoard2;
-        AgouraFree__Project__c testProject = new AgouraFree__Project__c(AgouraFree__Title__c='Test Project',
-                                                                AgouraFree__Project_Abbreviation__c='TESTTESTTEST',
-                                                                AgouraFree__Status__c='Open');
+        Project__c testProject = new Project__c(Title__c='Test Project',
+                                                                Project_Abbreviation__c='TESTTESTTEST',
+                                                                Status__c='Open');
         insert testProject;
-        AgouraFree__ProjectItem__c testProjectItem = new AgouraFree__ProjectItem__c(AgouraFree__Project__c=testProject.Id,
-                                                                            AgouraFree__Type__c='Project Document Owner',
-                                                                            AgouraFree__Title__c='Project Document Owner', 
-                                                                            AgouraFree__User__c=userId);
+        ProjectItem__c testProjectItem = new ProjectItem__c(Project__c=testProject.Id,
+                                                                            Type__c='Project Document Owner',
+                                                                            Title__c='Project Document Owner', 
+                                                                            User__c=userId);
         insert testProjectItem;
-        AgouraFree__ProjectItem__c testProjectItem2 = new AgouraFree__ProjectItem__c(AgouraFree__Project__c=testProject.Id,
-                                                                            AgouraFree__Type__c='Product Owner',
-                                                                            AgouraFree__Title__c='Product Owner', 
-                                                                            AgouraFree__User__c=userId);
+        ProjectItem__c testProjectItem2 = new ProjectItem__c(Project__c=testProject.Id,
+                                                                            Type__c='Product Owner',
+                                                                            Title__c='Product Owner', 
+                                                                            User__c=userId);
         insert testProjectItem2;
-        AgouraFree__Sprint__c testSprint = new AgouraFree__Sprint__c(AgouraFree__Project__c=testProject.Id,
-                                                             AgouraFree__Sprint_Length__c='2 weeks',
-                                                             AgouraFree__Sprint_Number__c=1,
-                                                             AgouraFree__Sprint_Name__c='Sprint 1',
-                                                             AgouraFree__Start_Date__c=thisDay);
+        Sprint__c testSprint = new Sprint__c(Project__c=testProject.Id,
+                                                             Sprint_Length__c='2 weeks',
+                                                             Sprint_Number__c=1,
+                                                             Sprint_Name__c='Sprint 1',
+                                                             Start_Date__c=thisDay);
         insert testSprint;
-        AgouraFree__ProjectTask__c testProjectTask = new AgouraFree__ProjectTask__c(AgouraFree__Project__c=testProject.Id,
-                                                                            AgouraFree__Title__c='Test Project Task',
-                                                                            AgouraFree__Sprint__c=testSprint.Id,
-                                                                            AgouraFree__Status__c='Open',
-                                                                            AgouraFree__Assigned_To__c=userId);
+        ProjectTask__c testProjectTask = new ProjectTask__c(Project__c=testProject.Id,
+                                                                            Title__c='Test Project Task',
+                                                                            Sprint__c=testSprint.Id,
+                                                                            Status__c='Open',
+                                                                            Assigned_To__c=userId);
         insert testProjectTask;
-        AgouraFree__ProjectTask__c testProjectTask2 = new AgouraFree__ProjectTask__c(AgouraFree__Project__c=testProject.Id,
-                                                                            AgouraFree__Title__c='Test Project Task',
-                                                                            AgouraFree__Sprint__c=testSprint.Id,
-                                                                            AgouraFree__Status__c='Open');
+        ProjectTask__c testProjectTask2 = new ProjectTask__c(Project__c=testProject.Id,
+                                                                            Title__c='Test Project Task',
+                                                                            Sprint__c=testSprint.Id,
+                                                                            Status__c='Open');
         insert testProjectTask2;      
         User testUser = createTestUser('userV1','standarduserV1@agourasoftware.com','Testing V1','standarduserV1@agourasoftware.com');  
             
         // start tests
         Test.startTest();
         String searchFilter1 = createTestFilter('','','','10');
-        AgouraFree.ViewControllerExt.PagedResult results1 = AgouraFree.ViewControllerExt.getHomeRecordList(searchFilter1, 10.0, 1.0);
+        ViewControllerExt.PagedResult results1 = ViewControllerExt.getHomeRecordList(searchFilter1, 10.0, 1.0);
         String searchFilter2 = createTestFilter('','','','1');
-        AgouraFree.ViewControllerExt.PagedResult results2 = AgouraFree.ViewControllerExt.getHomeRecordList(searchFilter2, 1.0, 2.0);
+        ViewControllerExt.PagedResult results2 = ViewControllerExt.getHomeRecordList(searchFilter2, 1.0, 2.0);
         String searchFilter3 = createTestFilter('','','Me','10');
-        AgouraFree.ViewControllerExt.PagedResult results3 = AgouraFree.ViewControllerExt.getHomeRecordList(searchFilter3, 10.0, 1.0);
+        ViewControllerExt.PagedResult results3 = ViewControllerExt.getHomeRecordList(searchFilter3, 10.0, 1.0);
         String searchFilter4 = createTestFilter('','','Me','1');
-        AgouraFree.ViewControllerExt.PagedResult results4 = AgouraFree.ViewControllerExt.getHomeRecordList(searchFilter4, 1.0, 2.0);        
+        ViewControllerExt.PagedResult results4 = ViewControllerExt.getHomeRecordList(searchFilter4, 1.0, 2.0);        
         String searchFilter5 = createTestFilter('','Draft','','10');
-        AgouraFree.ViewControllerExt.PagedResult results5 = AgouraFree.ViewControllerExt.getHomeRecordList(searchFilter5, 10.0, 1.0);
+        ViewControllerExt.PagedResult results5 = ViewControllerExt.getHomeRecordList(searchFilter5, 10.0, 1.0);
         String searchFilter6 = createTestFilter('','Draft','','1');
-        AgouraFree.ViewControllerExt.PagedResult results6 = AgouraFree.ViewControllerExt.getHomeRecordList(searchFilter6, 1.0, 2.0);
+        ViewControllerExt.PagedResult results6 = ViewControllerExt.getHomeRecordList(searchFilter6, 1.0, 2.0);
         String searchFilter7 = createTestFilter('','Draft','Me','10');
-        AgouraFree.ViewControllerExt.PagedResult results7 = AgouraFree.ViewControllerExt.getHomeRecordList(searchFilter7, 10.0, 1.0);
+        ViewControllerExt.PagedResult results7 = ViewControllerExt.getHomeRecordList(searchFilter7, 10.0, 1.0);
         String searchFilter8 = createTestFilter('','Draft','Me','1');
-        AgouraFree.ViewControllerExt.PagedResult results8 = AgouraFree.ViewControllerExt.getHomeRecordList(searchFilter8, 1.0, 2.0);
+        ViewControllerExt.PagedResult results8 = ViewControllerExt.getHomeRecordList(searchFilter8, 1.0, 2.0);
         String searchFilter9 = createTestFilter('','Open','','10');
-        AgouraFree.ViewControllerExt.PagedResult results9 = AgouraFree.ViewControllerExt.getHomeRecordList(searchFilter9, 10.0, 1.0);
+        ViewControllerExt.PagedResult results9 = ViewControllerExt.getHomeRecordList(searchFilter9, 10.0, 1.0);
         String searchFilter10 = createTestFilter('','Open','Me','10');
-        AgouraFree.ViewControllerExt.PagedResult results10 = AgouraFree.ViewControllerExt.getHomeRecordList(searchFilter10, 10.0, 1.0);  
+        ViewControllerExt.PagedResult results10 = ViewControllerExt.getHomeRecordList(searchFilter10, 10.0, 1.0);  
         
         String searchFilter11 = createTestFilter('','','','5');
-        AgouraFree.ViewControllerExt.PagedResult results11 = AgouraFree.ViewControllerExt.getHomeRecordList(searchFilter11, 5.0, 2.0);
+        ViewControllerExt.PagedResult results11 = ViewControllerExt.getHomeRecordList(searchFilter11, 5.0, 2.0);
         String searchFilter12 = createTestFilter('','','Me','5');
-        AgouraFree.ViewControllerExt.PagedResult results12 = AgouraFree.ViewControllerExt.getHomeRecordList(searchFilter12, 5.0, 2.0);
+        ViewControllerExt.PagedResult results12 = ViewControllerExt.getHomeRecordList(searchFilter12, 5.0, 2.0);
         String searchFilter13 = createTestFilter('','Draft','','5');
-        AgouraFree.ViewControllerExt.PagedResult results13 = AgouraFree.ViewControllerExt.getHomeRecordList(searchFilter13, 5.0, 2.0);
+        ViewControllerExt.PagedResult results13 = ViewControllerExt.getHomeRecordList(searchFilter13, 5.0, 2.0);
         String searchFilter14 = createTestFilter('','Draft','Me','5');
-        AgouraFree.ViewControllerExt.PagedResult results14 = AgouraFree.ViewControllerExt.getHomeRecordList(searchFilter14, 5.0, 2.0);
+        ViewControllerExt.PagedResult results14 = ViewControllerExt.getHomeRecordList(searchFilter14, 5.0, 2.0);
         
         System.runas(testUser) {
             try {
                 String accessFilter1 = createTestFilter('','','','10');
-                AgouraFree.ViewControllerExt.PagedResult accessResult = AgouraFree.ViewControllerExt.getHomeRecordList(accessFilter1, 10.0, 1.0);
+                ViewControllerExt.PagedResult accessResult = ViewControllerExt.getHomeRecordList(accessFilter1, 10.0, 1.0);
             } catch (AuraHandledException e) {
                 System.assertEquals('Insufficient access', e.getMessage());
             }
@@ -169,7 +169,7 @@ public class TestViewCtlExt {
         String userInfo = UserInfo.getName();
         
         Test.startTest();
-        User result = AgouraFree.ViewControllerExt.getUserInfo();
+        User result = ViewControllerExt.getUserInfo();
         Test.stopTest();
         
         System.assertEquals(userInfo, result.get('Name')); 
@@ -177,7 +177,7 @@ public class TestViewCtlExt {
 
     static testMethod void test_getOrgInfo() {        
         Test.startTest();
-        Organization result = AgouraFree.ViewControllerExt.getOrgInfo();
+        Organization result = ViewControllerExt.getOrgInfo();
         Test.stopTest();
         
         System.assertNotEquals(null, result.get('Id'));         
@@ -185,7 +185,7 @@ public class TestViewCtlExt {
 
     static testMethod void test_sendFeedback() {
         Test.startTest();
-        AgouraFree.ViewControllerExt.sendFeedback('Test Text');
+        ViewControllerExt.sendFeedback('Test Text');
         Integer invocations = Limits.getEmailInvocations();
         Test.stopTest();
         
@@ -197,8 +197,8 @@ public class TestViewCtlExt {
         List<ViewRecord> viewItems2 = new List<ViewRecord>{};
         List<ViewRecord> viewItems3 = new List<ViewRecord>{};
         List<ViewRecord> viewItems4 = new List<ViewRecord>{};
-        AgouraFree__IdeaBoard__c testIdeaBoard = new AgouraFree__IdeaBoard__c(AgouraFree__Title__c='Test Idea Board 1', 
-                                                                      AgouraFree__Status__c='Draft');    
+        IdeaBoard__c testIdeaBoard = new IdeaBoard__c(Title__c='Test Idea Board 1', 
+                                                                      Status__c='Draft');    
         insert testIdeaBoard;
         Id [] fixedResults = new Id[1];
         fixedResults.add(testIdeaBoard.Id);
@@ -208,17 +208,17 @@ public class TestViewCtlExt {
         // start tests
         Test.startTest();
         String searchFilter1 = createTestFilter('','','','10');
-        AgouraFree.ViewControllerExt.PagedResult results1 = AgouraFree.ViewControllerExt.getViewRecordList(searchFilter1, 10.0, 1.0, 'Idea Boards');
+        ViewControllerExt.PagedResult results1 = ViewControllerExt.getViewRecordList(searchFilter1, 10.0, 1.0, 'Idea Boards');
         String searchFilter2 = createTestFilter('','','Me','10');
-        AgouraFree.ViewControllerExt.PagedResult results2 = AgouraFree.ViewControllerExt.getViewRecordList(searchFilter2, 10.0, 1.0, 'Idea Boards');
+        ViewControllerExt.PagedResult results2 = ViewControllerExt.getViewRecordList(searchFilter2, 10.0, 1.0, 'Idea Boards');
         String searchFilter3 = createTestFilter('Test Idea Board 1','','','10');
-        AgouraFree.ViewControllerExt.PagedResult results3 = AgouraFree.ViewControllerExt.getViewRecordList(searchFilter3, 10.0, 1.0, 'Idea Boards');
+        ViewControllerExt.PagedResult results3 = ViewControllerExt.getViewRecordList(searchFilter3, 10.0, 1.0, 'Idea Boards');
         String searchFilter4 = createTestFilter('Test Idea Board 1','','Me','10');
-        AgouraFree.ViewControllerExt.PagedResult results4 = AgouraFree.ViewControllerExt.getViewRecordList(searchFilter4, 10.0, 1.0, 'Idea Boards');
+        ViewControllerExt.PagedResult results4 = ViewControllerExt.getViewRecordList(searchFilter4, 10.0, 1.0, 'Idea Boards');
         System.runas(testUser) {
             try {
                 String accessFilter1 = createTestFilter('','','','10');
-                AgouraFree.ViewControllerExt.PagedResult accessResult = AgouraFree.ViewControllerExt.getViewRecordList(accessFilter1, 10.0, 1.0, 'Idea Boards');
+                ViewControllerExt.PagedResult accessResult = ViewControllerExt.getViewRecordList(accessFilter1, 10.0, 1.0, 'Idea Boards');
             } catch (AuraHandledException e) {
                 System.assertEquals('Insufficient access', e.getMessage());
             }
@@ -246,14 +246,14 @@ public class TestViewCtlExt {
         List<ViewRecord> viewItems3 = new List<ViewRecord>{};
         List<ViewRecord> viewItems4 = new List<ViewRecord>{};
         Id userId = UserInfo.getUserId();
-        AgouraFree__Project__c testProject = new AgouraFree__Project__c(AgouraFree__Title__c='Test Project',
-                                                                AgouraFree__Project_Abbreviation__c='TESTTESTTEST',
-                                                                AgouraFree__Status__c='Draft');
+        Project__c testProject = new Project__c(Title__c='Test Project',
+                                                                Project_Abbreviation__c='TESTTESTTEST',
+                                                                Status__c='Draft');
         insert testProject;        
-        AgouraFree__ProjectTask__c testProjectTask = new AgouraFree__ProjectTask__c(AgouraFree__Project__c=testProject.Id,
-                                                                            AgouraFree__Title__c='Test Project Task',
-                                                                            AgouraFree__Status__c='Open',
-                                                                            AgouraFree__Assigned_To__c=userId);
+        ProjectTask__c testProjectTask = new ProjectTask__c(Project__c=testProject.Id,
+                                                                            Title__c='Test Project Task',
+                                                                            Status__c='Open',
+                                                                            Assigned_To__c=userId);
         insert testProjectTask;
         Id [] fixedResults = new Id[1];
         fixedResults.add(testProjectTask.Id);
@@ -262,13 +262,13 @@ public class TestViewCtlExt {
         // start tests
         Test.startTest();
         String searchFilter1 = createTestFilter('','','','10');
-        AgouraFree.ViewControllerExt.PagedResult results1 = AgouraFree.ViewControllerExt.getViewRecordList(searchFilter1, 10.0, 1.0, 'Project Tasks');
+        ViewControllerExt.PagedResult results1 = ViewControllerExt.getViewRecordList(searchFilter1, 10.0, 1.0, 'Project Tasks');
         String searchFilter2 = createTestFilter('','','Me','10');
-        AgouraFree.ViewControllerExt.PagedResult results2 = AgouraFree.ViewControllerExt.getViewRecordList(searchFilter2, 10.0, 1.0, 'Project Tasks');
+        ViewControllerExt.PagedResult results2 = ViewControllerExt.getViewRecordList(searchFilter2, 10.0, 1.0, 'Project Tasks');
         String searchFilter3 = createTestFilter('Test Project Task','','','10');
-        AgouraFree.ViewControllerExt.PagedResult results3 = AgouraFree.ViewControllerExt.getViewRecordList(searchFilter3, 10.0, 1.0, 'Project Tasks');
+        ViewControllerExt.PagedResult results3 = ViewControllerExt.getViewRecordList(searchFilter3, 10.0, 1.0, 'Project Tasks');
         String searchFilter4 = createTestFilter('Test Project Task','','Me','10');
-        AgouraFree.ViewControllerExt.PagedResult results4 = AgouraFree.ViewControllerExt.getViewRecordList(searchFilter4, 10.0, 1.0, 'Project Tasks');
+        ViewControllerExt.PagedResult results4 = ViewControllerExt.getViewRecordList(searchFilter4, 10.0, 1.0, 'Project Tasks');
         Test.stopTest();
         
         // validation
@@ -293,14 +293,14 @@ public class TestViewCtlExt {
         List<ViewRecord> viewItems4 = new List<ViewRecord>{};
         List<ViewRecord> viewItems5 = new List<ViewRecord>{};
         Id userId = UserInfo.getUserId();
-        AgouraFree__Project__c testProject = new AgouraFree__Project__c(AgouraFree__Title__c='Test Project',
-                                                                AgouraFree__Project_Abbreviation__c='TESTTESTTEST',
-                                                                AgouraFree__Status__c='Draft');
+        Project__c testProject = new Project__c(Title__c='Test Project',
+                                                                Project_Abbreviation__c='TESTTESTTEST',
+                                                                Status__c='Draft');
         insert testProject; 
-        AgouraFree__ProjectItem__c testProjectItem = new AgouraFree__ProjectItem__c(AgouraFree__Project__c=testProject.Id,
-                                                                            AgouraFree__Type__c='Project Document Owner',
-                                                                            AgouraFree__Title__c='Project Document Owner', 
-                                                                            AgouraFree__User__c=userId);
+        ProjectItem__c testProjectItem = new ProjectItem__c(Project__c=testProject.Id,
+                                                                            Type__c='Project Document Owner',
+                                                                            Title__c='Project Document Owner', 
+                                                                            User__c=userId);
         insert testProjectItem;   
         Id [] fixedResults = new Id[1];
         fixedResults.add(testProject.Id);
@@ -309,15 +309,15 @@ public class TestViewCtlExt {
         // start tests
         Test.startTest();
         String searchFilter1 = createTestFilter('','','','10');
-        AgouraFree.ViewControllerExt.PagedResult results1 = AgouraFree.ViewControllerExt.getViewRecordList(searchFilter1, 10.0, 1.0, 'Projects');
+        ViewControllerExt.PagedResult results1 = ViewControllerExt.getViewRecordList(searchFilter1, 10.0, 1.0, 'Projects');
         String searchFilter2 = createTestFilter('','','Me','10');
-        AgouraFree.ViewControllerExt.PagedResult results2 = AgouraFree.ViewControllerExt.getViewRecordList(searchFilter2, 10.0, 1.0, 'Projects');
+        ViewControllerExt.PagedResult results2 = ViewControllerExt.getViewRecordList(searchFilter2, 10.0, 1.0, 'Projects');
         String searchFilter3 = createTestFilter('Test Project','','','10');
-        AgouraFree.ViewControllerExt.PagedResult results3 = AgouraFree.ViewControllerExt.getViewRecordList(searchFilter3, 10.0, 1.0, 'Projects');
+        ViewControllerExt.PagedResult results3 = ViewControllerExt.getViewRecordList(searchFilter3, 10.0, 1.0, 'Projects');
         String searchFilter4 = createTestFilter('Test Project','','Me','10');
-        AgouraFree.ViewControllerExt.PagedResult results4 = AgouraFree.ViewControllerExt.getViewRecordList(searchFilter4, 10.0, 1.0, 'Projects');
+        ViewControllerExt.PagedResult results4 = ViewControllerExt.getViewRecordList(searchFilter4, 10.0, 1.0, 'Projects');
         String searchFilter5 = createTestFilter('','','','10');
-        AgouraFree.ViewControllerExt.PagedResult results5 = AgouraFree.ViewControllerExt.getViewRecordList(searchFilter1, 10.0, 1.0, 'Project Templates');
+        ViewControllerExt.PagedResult results5 = ViewControllerExt.getViewRecordList(searchFilter1, 10.0, 1.0, 'Project Templates');
         Test.stopTest();
         
         // validation
@@ -347,21 +347,21 @@ public class TestViewCtlExt {
         List<ViewRecord> viewItems7 = new List<ViewRecord>{};
         List<ViewRecord> viewItems8 = new List<ViewRecord>{};
         Id userId = UserInfo.getUserId();
-        AgouraFree__Project__c testProject = new AgouraFree__Project__c(AgouraFree__Title__c='Test Project',
-                                                                AgouraFree__Project_Abbreviation__c='TESTTESTTEST',
-                                                                AgouraFree__Status__c='Draft');
+        Project__c testProject = new Project__c(Title__c='Test Project',
+                                                                Project_Abbreviation__c='TESTTESTTEST',
+                                                                Status__c='Draft');
         insert testProject;  
-        AgouraFree__ProjectItem__c testProjectItem = new AgouraFree__ProjectItem__c(AgouraFree__Project__c=testProject.Id,
-                                                                            AgouraFree__Type__c='Project Document Owner',
-                                                                            AgouraFree__Title__c='Project Document Owner', 
-                                                                            AgouraFree__User__c=userId);
+        ProjectItem__c testProjectItem = new ProjectItem__c(Project__c=testProject.Id,
+                                                                            Type__c='Project Document Owner',
+                                                                            Title__c='Project Document Owner', 
+                                                                            User__c=userId);
         insert testProjectItem;
         Date thisDay = Date.today();
-        AgouraFree__Sprint__c testSprint = new AgouraFree__Sprint__c(AgouraFree__Project__c=testProject.Id,
-                                                             AgouraFree__Sprint_Length__c='2 weeks',
-                                                             AgouraFree__Sprint_Name__c='Sprint 1',
-                                                             AgouraFree__Start_Date__c=thisDay,
-                                                             AgouraFree__Sprint_Number__c=1);
+        Sprint__c testSprint = new Sprint__c(Project__c=testProject.Id,
+                                                             Sprint_Length__c='2 weeks',
+                                                             Sprint_Name__c='Sprint 1',
+                                                             Start_Date__c=thisDay,
+                                                             Sprint_Number__c=1);
         insert testSprint;
         Id [] fixedResults = new Id[1];
         fixedResults.add(testSprint.Id);
@@ -370,22 +370,22 @@ public class TestViewCtlExt {
         // start tests
         Test.startTest();
         String searchFilter1 = createTestFilter('','','','10');
-        AgouraFree.ViewControllerExt.PagedResult results1 = AgouraFree.ViewControllerExt.getViewRecordList(searchFilter1, 10.0, 1.0, 'Sprints');
+        ViewControllerExt.PagedResult results1 = ViewControllerExt.getViewRecordList(searchFilter1, 10.0, 1.0, 'Sprints');
         String searchFilter2 = createTestFilter('','','Me','10');
-        AgouraFree.ViewControllerExt.PagedResult results2 = AgouraFree.ViewControllerExt.getViewRecordList(searchFilter2, 10.0, 1.0, 'Sprints');
+        ViewControllerExt.PagedResult results2 = ViewControllerExt.getViewRecordList(searchFilter2, 10.0, 1.0, 'Sprints');
         String searchFilter3 = createTestFilter('Sprint 1','','','10');
-        AgouraFree.ViewControllerExt.PagedResult results3 = AgouraFree.ViewControllerExt.getViewRecordList(searchFilter3, 10.0, 1.0, 'Sprints');
+        ViewControllerExt.PagedResult results3 = ViewControllerExt.getViewRecordList(searchFilter3, 10.0, 1.0, 'Sprints');
         String searchFilter4 = createTestFilter('Sprint 1','','Me','10');
-        AgouraFree.ViewControllerExt.PagedResult results4 = AgouraFree.ViewControllerExt.getViewRecordList(searchFilter4, 10.0, 1.0, 'Sprints');
+        ViewControllerExt.PagedResult results4 = ViewControllerExt.getViewRecordList(searchFilter4, 10.0, 1.0, 'Sprints');
         
         String searchFilter5 = createTestFilter('','Open','','10');
-        AgouraFree.ViewControllerExt.PagedResult results5 = AgouraFree.ViewControllerExt.getViewRecordList(searchFilter5, 10.0, 1.0, 'Sprints');
+        ViewControllerExt.PagedResult results5 = ViewControllerExt.getViewRecordList(searchFilter5, 10.0, 1.0, 'Sprints');
         String searchFilter6 = createTestFilter('','Open','Me','10');
-        AgouraFree.ViewControllerExt.PagedResult results6 = AgouraFree.ViewControllerExt.getViewRecordList(searchFilter6, 10.0, 1.0, 'Sprints');
+        ViewControllerExt.PagedResult results6 = ViewControllerExt.getViewRecordList(searchFilter6, 10.0, 1.0, 'Sprints');
         String searchFilter7 = createTestFilter('Sprint 1','Open','','10');
-        AgouraFree.ViewControllerExt.PagedResult results7 = AgouraFree.ViewControllerExt.getViewRecordList(searchFilter7, 10.0, 1.0, 'Sprints');
+        ViewControllerExt.PagedResult results7 = ViewControllerExt.getViewRecordList(searchFilter7, 10.0, 1.0, 'Sprints');
         String searchFilter8 = createTestFilter('Sprint 1','Open','Me','10');
-        AgouraFree.ViewControllerExt.PagedResult results8 = AgouraFree.ViewControllerExt.getViewRecordList(searchFilter8, 10.0, 1.0, 'Sprints');
+        ViewControllerExt.PagedResult results8 = ViewControllerExt.getViewRecordList(searchFilter8, 10.0, 1.0, 'Sprints');
         Test.stopTest();
         
         // validation
@@ -422,22 +422,22 @@ public class TestViewCtlExt {
         List<ViewRecord> viewItems7 = new List<ViewRecord>{};
         List<ViewRecord> viewItems8 = new List<ViewRecord>{};
         Id userId = UserInfo.getUserId();
-        AgouraFree__Project__c testProject = new AgouraFree__Project__c(AgouraFree__Title__c='Test Project',
-                                                                AgouraFree__Project_Abbreviation__c='TESTTESTTEST',
-                                                                AgouraFree__Status__c='Draft');
+        Project__c testProject = new Project__c(Title__c='Test Project',
+                                                                Project_Abbreviation__c='TESTTESTTEST',
+                                                                Status__c='Draft');
         insert testProject;  
-        AgouraFree__ProjectItem__c testProjectItem = new AgouraFree__ProjectItem__c(AgouraFree__Project__c=testProject.Id,
-                                                                            AgouraFree__Type__c='Project Document Owner',
-                                                                            AgouraFree__Title__c='Project Document Owner', 
-                                                                            AgouraFree__User__c=userId);
+        ProjectItem__c testProjectItem = new ProjectItem__c(Project__c=testProject.Id,
+                                                                            Type__c='Project Document Owner',
+                                                                            Title__c='Project Document Owner', 
+                                                                            User__c=userId);
         insert testProjectItem;
         Date thisDay = Date.today();
         Date tomorrowsDate = thisDay.addDays(1);
-        AgouraFree__Sprint__c testSprint = new AgouraFree__Sprint__c(AgouraFree__Project__c=testProject.Id,
-                                                             AgouraFree__Sprint_Length__c='2 weeks',
-                                                             AgouraFree__Sprint_Name__c='Sprint 1',
-                                                             AgouraFree__Start_Date__c=tomorrowsDate,
-                                                             AgouraFree__Sprint_Number__c=1);
+        Sprint__c testSprint = new Sprint__c(Project__c=testProject.Id,
+                                                             Sprint_Length__c='2 weeks',
+                                                             Sprint_Name__c='Sprint 1',
+                                                             Start_Date__c=tomorrowsDate,
+                                                             Sprint_Number__c=1);
         insert testSprint;
         Id [] fixedResults = new Id[1];
         fixedResults.add(testSprint.Id);
@@ -446,13 +446,13 @@ public class TestViewCtlExt {
         // start tests
         Test.startTest();        
         String searchFilter5 = createTestFilter('','Closed','','10');
-        AgouraFree.ViewControllerExt.PagedResult results5 = AgouraFree.ViewControllerExt.getViewRecordList(searchFilter5, 10.0, 1.0, 'Sprints');
+        ViewControllerExt.PagedResult results5 = ViewControllerExt.getViewRecordList(searchFilter5, 10.0, 1.0, 'Sprints');
         String searchFilter6 = createTestFilter('','Closed','Me','10');
-        AgouraFree.ViewControllerExt.PagedResult results6 = AgouraFree.ViewControllerExt.getViewRecordList(searchFilter6, 10.0, 1.0, 'Sprints');
+        ViewControllerExt.PagedResult results6 = ViewControllerExt.getViewRecordList(searchFilter6, 10.0, 1.0, 'Sprints');
         String searchFilter7 = createTestFilter('Sprint 1','Closed','','10');
-        AgouraFree.ViewControllerExt.PagedResult results7 = AgouraFree.ViewControllerExt.getViewRecordList(searchFilter7, 10.0, 1.0, 'Sprints');
+        ViewControllerExt.PagedResult results7 = ViewControllerExt.getViewRecordList(searchFilter7, 10.0, 1.0, 'Sprints');
         String searchFilter8 = createTestFilter('Sprint 1','Closed','Me','10');
-        AgouraFree.ViewControllerExt.PagedResult results8 = AgouraFree.ViewControllerExt.getViewRecordList(searchFilter8, 10.0, 1.0, 'Sprints');
+        ViewControllerExt.PagedResult results8 = ViewControllerExt.getViewRecordList(searchFilter8, 10.0, 1.0, 'Sprints');
         Test.stopTest();
         
         // validation        
@@ -473,10 +473,10 @@ public class TestViewCtlExt {
     static testMethod void test_getViewRecordList_tags() {
         List<ViewRecord> viewItems1 = new List<ViewRecord>{};
         List<ViewRecord> viewItems2 = new List<ViewRecord>{};
-        AgouraFree__Tag__c testTag = new AgouraFree__Tag__c(Name='Test Tag', 
-                                                    AgouraFree__For_IdeaBoards__c=True,
-                                                    AgouraFree__For_ProjectTasks__c=True,
-                                                    AgouraFree__For_Projects__c=True);
+        Tag__c testTag = new Tag__c(Name='Test Tag', 
+                                                    For_IdeaBoards__c=True,
+                                                    For_ProjectTasks__c=True,
+                                                    For_Projects__c=True);
         insert testTag;
         Id [] fixedResults = new Id[1];
         fixedResults.add(testTag.Id);
@@ -485,9 +485,9 @@ public class TestViewCtlExt {
         // start tests
         Test.startTest();
         String searchFilter1 = createTestFilter('','','','10');
-        AgouraFree.ViewControllerExt.PagedResult results1 = AgouraFree.ViewControllerExt.getViewRecordList(searchFilter1, 10.0, 1.0, 'Tags');
+        ViewControllerExt.PagedResult results1 = ViewControllerExt.getViewRecordList(searchFilter1, 10.0, 1.0, 'Tags');
         String searchFilter2 = createTestFilter('Test Tag','','','10');
-        AgouraFree.ViewControllerExt.PagedResult results2 = AgouraFree.ViewControllerExt.getViewRecordList(searchFilter2, 10.0, 1.0, 'Tags');        
+        ViewControllerExt.PagedResult results2 = ViewControllerExt.getViewRecordList(searchFilter2, 10.0, 1.0, 'Tags');        
         Test.stopTest();
         
         // validation
@@ -502,8 +502,8 @@ public class TestViewCtlExt {
     static testMethod void test_getViewRecordList_anchorStories() {
         List<ViewRecord> viewItems1 = new List<ViewRecord>{};
         List<ViewRecord> viewItems2 = new List<ViewRecord>{};
-        AgouraFree__AnchorStory__c testAnchorStory = new AgouraFree__AnchorStory__c(AgouraFree__Title__c='Test Anchor Story',
-                                                                            AgouraFree__Type__c='User Story');        
+        AnchorStory__c testAnchorStory = new AnchorStory__c(Title__c='Test Anchor Story',
+                                                                            Type__c='User Story');        
         insert testAnchorStory;
         Id [] fixedResults = new Id[1];
         fixedResults.add(testAnchorStory.Id);
@@ -512,9 +512,9 @@ public class TestViewCtlExt {
         // start tests
         Test.startTest();
         String searchFilter1 = createTestFilter('','','','10');
-        AgouraFree.ViewControllerExt.PagedResult results1 = AgouraFree.ViewControllerExt.getViewRecordList(searchFilter1, 10.0, 1.0, 'Anchor Stories');
+        ViewControllerExt.PagedResult results1 = ViewControllerExt.getViewRecordList(searchFilter1, 10.0, 1.0, 'Anchor Stories');
         String searchFilter2 = createTestFilter('Test Anchor Story','','','10');
-        AgouraFree.ViewControllerExt.PagedResult results2 = AgouraFree.ViewControllerExt.getViewRecordList(searchFilter2, 10.0, 1.0, 'Anchor Stories');        
+        ViewControllerExt.PagedResult results2 = ViewControllerExt.getViewRecordList(searchFilter2, 10.0, 1.0, 'Anchor Stories');        
         Test.stopTest();
         
         // validation
@@ -529,14 +529,14 @@ public class TestViewCtlExt {
     static testMethod void test_viewRecord() {
         List<ViewRecord> viewItems1 = new List<ViewRecord>{};
         Id userId = UserInfo.getUserId();
-        AgouraFree__Project__c testProject = new AgouraFree__Project__c(AgouraFree__Title__c='Test Project',
-                                                                AgouraFree__Project_Abbreviation__c='TESTTESTTEST',
-                                                                AgouraFree__Status__c='Draft');
+        Project__c testProject = new Project__c(Title__c='Test Project',
+                                                                Project_Abbreviation__c='TESTTESTTEST',
+                                                                Status__c='Draft');
         insert testProject;        
-        AgouraFree__ProjectTask__c testProjectTask = new AgouraFree__ProjectTask__c(AgouraFree__Project__c=testProject.Id,
-                                                                            AgouraFree__Title__c='Test Project Task',
-                                                                            AgouraFree__Status__c='Open',
-                                                                            AgouraFree__Assigned_To__c=userId);
+        ProjectTask__c testProjectTask = new ProjectTask__c(Project__c=testProject.Id,
+                                                                            Title__c='Test Project Task',
+                                                                            Status__c='Open',
+                                                                            Assigned_To__c=userId);
         insert testProjectTask;
         Id [] fixedResults = new Id[1];
         fixedResults.add(testProjectTask.Id);
@@ -545,13 +545,13 @@ public class TestViewCtlExt {
         // start tests
         Test.startTest();
         String searchFilter1 = createTestFilter('','','','10');
-        AgouraFree.ViewControllerExt.PagedResult results1 = AgouraFree.ViewControllerExt.getViewRecordList(searchFilter1, 10.0, 1.0, 'Project Tasks');
+        ViewControllerExt.PagedResult results1 = ViewControllerExt.getViewRecordList(searchFilter1, 10.0, 1.0, 'Project Tasks');
         String searchFilter2 = createTestFilter('','','Me','10');
         Test.stopTest();
         
         // validation
-        list<AgouraFree__ProjectTask__c> getResults = [SELECT Id, Name, CreatedDate, LastModifiedDate
-                                                   FROM AgouraFree__ProjectTask__c
+        list<ProjectTask__c> getResults = [SELECT Id, Name, CreatedDate, LastModifiedDate
+                                                   FROM ProjectTask__c
                                                    WHERE Id = :testProjectTask.Id];
         System.assertEquals(1, getResults.size());
         
@@ -559,7 +559,7 @@ public class TestViewCtlExt {
         System.assertEquals(1, results1.total);
         System.assertEquals(testProjectTask.Id, viewItems1.get(0).getId());
         System.assertEquals(getResults.get(0).Name, viewItems1.get(0).getUniqueId());
-        System.assertEquals('AgouraFree__ProjectTask__c', viewItems1.get(0).getSObjectType());
+        System.assertEquals('ProjectTask__c', viewItems1.get(0).getSObjectType());
         System.assertEquals('standard:task', viewItems1.get(0).getIcon());
         System.assertEquals('AutoNumber Test Project Task', viewItems1.get(0).getTitle());
         System.assertEquals('Open', viewItems1.get(0).getStatus());
@@ -576,9 +576,9 @@ public class TestViewCtlExt {
         User testUser = createTestUser('userV2','standarduserV2@agourasoftware.com','Testing V2','standarduserV2@agourasoftware.com'); 
         
         Test.startTest();
-        AgouraFree.ViewControllerExt.ObjectAccess result = AgouraFree.ViewControllerExt.objectAccess();
+        ViewControllerExt.ObjectAccess result = ViewControllerExt.objectAccess();
         System.runas(testUser) {
-            AgouraFree.ViewControllerExt.ObjectAccess accessResult = AgouraFree.ViewControllerExt.objectAccess(); 
+            ViewControllerExt.ObjectAccess accessResult = ViewControllerExt.objectAccess(); 
             System.assertEquals(false, accessResult.canCreateAnchorStory);
             System.assertEquals(false, accessResult.canCreateTag);
         }
@@ -590,12 +590,12 @@ public class TestViewCtlExt {
             
 	static testMethod void test_getFieldLabelMap() {
         List<String> fieldList = new List<String>();
-        fieldList.add('AgouraFree__Title__c');
+        fieldList.add('Title__c');
         Test.startTest();
         
-        Map<String, String> results = AgouraFree.ViewControllerExt.getFieldLabelMap('AgouraFree__ProjectTask__c', fieldList);
+        Map<String, String> results = ViewControllerExt.getFieldLabelMap('ProjectTask__c', fieldList);
            
-        System.assertEquals(true,results.containsKey('AgouraFree__Title__c'));     
+        System.assertEquals(true,results.containsKey('Title__c'));     
 		Test.stopTest();
     }
         
@@ -603,7 +603,7 @@ public class TestViewCtlExt {
     // create test data
     // 
     private static String createTestFilter(String searchKeyStr, String statusKeyStr, String assignedKeyStr, String rowKeyStr) {
-        AgouraFree.ViewControllerExt.Filter testFilter = new AgouraFree.ViewControllerExt.Filter();
+        ViewControllerExt.Filter testFilter = new ViewControllerExt.Filter();
         testFilter.searchKey = searchKeyStr;
         testFilter.statusKey = statusKeyStr;        
         testFilter.assignedKey = assignedKeyStr;
