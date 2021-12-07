@@ -48,11 +48,11 @@ public with sharing class ViewControllerExt {
         Integer index = 0;
         
         if (viewName == 'Home') {
-            Schema.DescribeFieldResult result1 = AgouraFree__IdeaBoard__c.AgouraFree__Status__c.getDescribe();
+            Schema.DescribeFieldResult result1 = IdeaBoard__c.Status__c.getDescribe();
             List<Schema.PicklistEntry> entries1 = result1.getPicklistValues();
-            Schema.DescribeFieldResult result2 = AgouraFree__Project__c.AgouraFree__Status__c.getDescribe();
+            Schema.DescribeFieldResult result2 = Project__c.Status__c.getDescribe();
             List<Schema.PicklistEntry> entries2 = result2.getPicklistValues();
-            Schema.DescribeFieldResult result3 = AgouraFree__ProjectTask__c.AgouraFree__Status__c.getDescribe();
+            Schema.DescribeFieldResult result3 = ProjectTask__c.Status__c.getDescribe();
             List<Schema.PicklistEntry> entries3 = result3.getPicklistValues();
             
             for (Schema.PicklistEntry entry: entries1) {
@@ -90,21 +90,21 @@ public with sharing class ViewControllerExt {
                 }
             }
         } else if (viewName == 'Idea Boards') {
-            Schema.DescribeFieldResult result1 = AgouraFree__IdeaBoard__c.AgouraFree__Status__c.getDescribe();
+            Schema.DescribeFieldResult result1 = IdeaBoard__c.Status__c.getDescribe();
             List<Schema.PicklistEntry> entries1 = result1.getPicklistValues();
             
             for (Schema.PicklistEntry entry: entries1) {
                 uniqueValues.add(entry.getValue());
             }
         } else if (viewName == 'Project Tasks') {
-            Schema.DescribeFieldResult result1 = AgouraFree__ProjectTask__c.AgouraFree__Status__c.getDescribe();
+            Schema.DescribeFieldResult result1 = ProjectTask__c.Status__c.getDescribe();
             List<Schema.PicklistEntry> entries1 = result1.getPicklistValues();
             
             for (Schema.PicklistEntry entry: entries1) {
                 uniqueValues.add(entry.getValue());
             }
         } else if (viewName == 'Projects' || viewName == 'Project Templates') {
-            Schema.DescribeFieldResult result1 = AgouraFree__Project__c.AgouraFree__Status__c.getDescribe();
+            Schema.DescribeFieldResult result1 = Project__c.Status__c.getDescribe();
             List<Schema.PicklistEntry> entries1 = result1.getPicklistValues();
             
             for (Schema.PicklistEntry entry: entries1) {
@@ -121,11 +121,11 @@ public with sharing class ViewControllerExt {
     @AuraEnabled
     public static PagedResult getHomeRecordList(String filters, Decimal pageSize, Decimal pageNumber) {
         // CRUD and FLS Enforcement
-        if (!Schema.sObjectType.AgouraFree__IdeaBoard__c.isAccessible() || 
-            !Schema.sObjectType.AgouraFree__Project__c.isAccessible() || 
-            !Schema.sObjectType.AgouraFree__Sprint__c.isAccessible() || 
-            !Schema.sObjectType.AgouraFree__ProjectItem__c.isAccessible() || 
-            !Schema.sObjectType.AgouraFree__ProjectTask__c.isAccessible()) {
+        if (!Schema.sObjectType.IdeaBoard__c.isAccessible() || 
+            !Schema.sObjectType.Project__c.isAccessible() || 
+            !Schema.sObjectType.Sprint__c.isAccessible() || 
+            !Schema.sObjectType.ProjectItem__c.isAccessible() || 
+            !Schema.sObjectType.ProjectTask__c.isAccessible()) {
                 System.debug('Insufficient access');
                 AuraHandledException e = new AuraHandledException('Insufficient access');
                 e.setMessage('Insufficient access');
@@ -152,64 +152,64 @@ public with sharing class ViewControllerExt {
         Integer skipRecords = offset;   
         
         // set SOQL query strings
-        String ideaBoardTotalQuery = 'SELECT count() FROM AgouraFree__IdeaBoard__c WHERE AgouraFree__Title__c LIKE :searchKey';
-        String ideaBoardRecordQuery = 'SELECT Id, Name, AgouraFree__Title__c, AgouraFree__Status__c, CreatedDate, LastModifiedDate, UserRecordAccess.HasEditAccess ' +
-            'FROM AgouraFree__IdeaBoard__c  WHERE AgouraFree__Title__c LIKE :searchKey';
-        String projectTotalQuery = 'SELECT count() FROM AgouraFree__Project__c ' +
-            'WHERE Id IN (SELECT AgouraFree__Project__c FROM AgouraFree__ProjectItem__c WHERE AgouraFree__User__c = :userId ' +
-            'AND AgouraFree__Type__c != \'Project Link\') ' +
-            'AND AgouraFree__Title__c LIKE :searchKey';
-        String projectRecordQuery = 'SELECT Id, Name, AgouraFree__Title__c, AgouraFree__Status__c, CreatedDate, LastModifiedDate, UserRecordAccess.HasEditAccess ' +
-            'FROM AgouraFree__Project__c ' +
-            'WHERE Id IN (SELECT AgouraFree__Project__c FROM AgouraFree__ProjectItem__c WHERE AgouraFree__User__c = :userId AND AgouraFree__Type__c != \'Project Link\') ' +
-            'AND AgouraFree__Title__c LIKE :searchKey';
-        String sprintTotalQuery = 'SELECT count() FROM AgouraFree__Sprint__c ' +
-            'WHERE AgouraFree__Start_Date__c <= today ' +
-            'AND (AgouraFree__End_Date__c = null or AgouraFree__End_Date__c >= today) ' +
-            'AND AgouraFree__Project__c IN (SELECT AgouraFree__Project__c FROM AgouraFree__ProjectItem__c ' + 
-            'WHERE AgouraFree__User__c = :userId ' +    
-            'AND AgouraFree__Project__r.AgouraFree__Title__c LIKE :searchKey ' +
-            'AND AgouraFree__Project__r.AgouraFree__Status__c NOT IN :ignoreStatus ' +
-            'AND AgouraFree__Type__c != \'Project Link\')';
-        String sprintRecordQuery = 'SELECT Id, Name, AgouraFree__Project__r.AgouraFree__Title__c, AgouraFree__Sprint_Name__c, CreatedDate, LastModifiedDate, ' +
-            'UserRecordAccess.HasEditAccess FROM AgouraFree__Sprint__c ' +
-            'WHERE AgouraFree__Start_Date__c <= today ' +
-            'AND (AgouraFree__End_Date__c = null or AgouraFree__End_Date__c >= today) ' +
-            'AND AgouraFree__Project__c IN ( ' +
-            'SELECT AgouraFree__Project__c FROM AgouraFree__ProjectItem__c ' +
-            'WHERE AgouraFree__User__c = :userId ' +                    
-            'AND AgouraFree__Project__r.AgouraFree__Title__c LIKE :searchKey ' +
-            'AND AgouraFree__Project__r.AgouraFree__Status__c NOT IN :ignoreStatus ' +
-            'AND AgouraFree__Type__c != \'Project Link\')';
-        String taskTotalQuery = 'SELECT count() FROM AgouraFree__ProjectTask__c ' +
-            'WHERE AgouraFree__Title__c LIKE :searchKey ';
-        String taskRecordQuery = 'SELECT Id, Name, AgouraFree__Task_Number_Int__c, AgouraFree__Task_Number__c, AgouraFree__Title__c, AgouraFree__Status__c, ' +
-            'CreatedDate, LastModifiedDate, AgouraFree__Project__r.AgouraFree__Project_Abbreviation__c, UserRecordAccess.HasEditAccess ' +
-            'FROM AgouraFree__ProjectTask__c WHERE AgouraFree__Title__c LIKE :searchKey';
+        String ideaBoardTotalQuery = 'SELECT count() FROM IdeaBoard__c WHERE Title__c LIKE :searchKey';
+        String ideaBoardRecordQuery = 'SELECT Id, Name, Title__c, Status__c, CreatedDate, LastModifiedDate, UserRecordAccess.HasEditAccess ' +
+            'FROM IdeaBoard__c  WHERE Title__c LIKE :searchKey';
+        String projectTotalQuery = 'SELECT count() FROM Project__c ' +
+            'WHERE Id IN (SELECT Project__c FROM ProjectItem__c WHERE User__c = :userId ' +
+            'AND Type__c != \'Project Link\') ' +
+            'AND Title__c LIKE :searchKey';
+        String projectRecordQuery = 'SELECT Id, Name, Title__c, Status__c, CreatedDate, LastModifiedDate, UserRecordAccess.HasEditAccess ' +
+            'FROM Project__c ' +
+            'WHERE Id IN (SELECT Project__c FROM ProjectItem__c WHERE User__c = :userId AND Type__c != \'Project Link\') ' +
+            'AND Title__c LIKE :searchKey';
+        String sprintTotalQuery = 'SELECT count() FROM Sprint__c ' +
+            'WHERE Start_Date__c <= today ' +
+            'AND (End_Date__c = null or End_Date__c >= today) ' +
+            'AND Project__c IN (SELECT Project__c FROM ProjectItem__c ' + 
+            'WHERE User__c = :userId ' +    
+            'AND Project__r.Title__c LIKE :searchKey ' +
+            'AND Project__r.Status__c NOT IN :ignoreStatus ' +
+            'AND Type__c != \'Project Link\')';
+        String sprintRecordQuery = 'SELECT Id, Name, Project__r.Title__c, Sprint_Name__c, CreatedDate, LastModifiedDate, ' +
+            'UserRecordAccess.HasEditAccess FROM Sprint__c ' +
+            'WHERE Start_Date__c <= today ' +
+            'AND (End_Date__c = null or End_Date__c >= today) ' +
+            'AND Project__c IN ( ' +
+            'SELECT Project__c FROM ProjectItem__c ' +
+            'WHERE User__c = :userId ' +                    
+            'AND Project__r.Title__c LIKE :searchKey ' +
+            'AND Project__r.Status__c NOT IN :ignoreStatus ' +
+            'AND Type__c != \'Project Link\')';
+        String taskTotalQuery = 'SELECT count() FROM ProjectTask__c ' +
+            'WHERE Title__c LIKE :searchKey ';
+        String taskRecordQuery = 'SELECT Id, Name, Task_Number_Int__c, Task_Number__c, Title__c, Status__c, ' +
+            'CreatedDate, LastModifiedDate, Project__r.Project_Abbreviation__c, UserRecordAccess.HasEditAccess ' +
+            'FROM ProjectTask__c WHERE Title__c LIKE :searchKey';
         
         if (assignedKey != '') {
             ideaBoardTotalQuery += ' AND OwnerId = :userId';
             ideaBoardRecordQuery += ' AND OwnerId = :userId';
-            taskTotalQuery += ' AND AgouraFree__Assigned_To__c = :userId';
-            taskRecordQuery += ' AND AgouraFree__Assigned_To__c = :userId';
+            taskTotalQuery += ' AND Assigned_To__c = :userId';
+            taskRecordQuery += ' AND Assigned_To__c = :userId';
         } else {
-            taskTotalQuery += ' AND (AgouraFree__Assigned_To__c = :userId OR CreatedById = :userId)';
-            taskRecordQuery += ' AND (AgouraFree__Assigned_To__c = :userId OR CreatedById = :userId)';
+            taskTotalQuery += ' AND (Assigned_To__c = :userId OR CreatedById = :userId)';
+            taskRecordQuery += ' AND (Assigned_To__c = :userId OR CreatedById = :userId)';
         }
         if (statusKey  == '') {
-            ideaBoardTotalQuery += ' AND AgouraFree__Status__c NOT IN :ignoreStatus';
-            ideaBoardRecordQuery += ' AND AgouraFree__Status__c NOT IN :ignoreStatus';
-            projectTotalQuery += ' AND AgouraFree__Status__c NOT IN :ignoreStatus';
-            projectRecordQuery += ' AND AgouraFree__Status__c NOT IN :ignoreStatus';
-            taskTotalQuery += ' AND AgouraFree__Status__c NOT IN :ignoreStatus';
-            taskRecordQuery += ' AND AgouraFree__Status__c NOT IN :ignoreStatus';
+            ideaBoardTotalQuery += ' AND Status__c NOT IN :ignoreStatus';
+            ideaBoardRecordQuery += ' AND Status__c NOT IN :ignoreStatus';
+            projectTotalQuery += ' AND Status__c NOT IN :ignoreStatus';
+            projectRecordQuery += ' AND Status__c NOT IN :ignoreStatus';
+            taskTotalQuery += ' AND Status__c NOT IN :ignoreStatus';
+            taskRecordQuery += ' AND Status__c NOT IN :ignoreStatus';
         } else {
-            ideaBoardTotalQuery += ' AND AgouraFree__Status__c = :statusKey';  
-            ideaBoardRecordQuery += ' AND AgouraFree__Status__c = :statusKey';  
-            projectTotalQuery += ' AND AgouraFree__Status__c = :statusKey';  
-            projectRecordQuery += ' AND AgouraFree__Status__c = :statusKey';   
-            taskTotalQuery += ' AND AgouraFree__Status__c = :statusKey';     
-            taskRecordQuery += ' AND AgouraFree__Status__c = :statusKey';            
+            ideaBoardTotalQuery += ' AND Status__c = :statusKey';  
+            ideaBoardRecordQuery += ' AND Status__c = :statusKey';  
+            projectTotalQuery += ' AND Status__c = :statusKey';  
+            projectRecordQuery += ' AND Status__c = :statusKey';   
+            taskTotalQuery += ' AND Status__c = :statusKey';     
+            taskRecordQuery += ' AND Status__c = :statusKey';            
         }
         
         // perform SOQL queries
@@ -225,11 +225,11 @@ public with sharing class ViewControllerExt {
         
         skipRecords = skipRecords - r.ideaBoardTotal;
         if (pSize > 0 && skipRecords <= 0 && offset >= 0) {
-            ideaBoardRecordQuery += ' ORDER BY AgouraFree__Title__c LIMIT :pSize OFFSET :offset';
-            List<AgouraFree__IdeaBoard__c> ideaBoardList = Database.query(ideaBoardRecordQuery);   
-            for (AgouraFree__IdeaBoard__c ideaBoard : ideaBoardList) {
-                homeResults.add(new ViewRecord(ideaBoard.Id, ideaBoard.Name, 'AgouraFree__IdeaBoard__c', 'standard:drafts', 
-                                               ideaBoard.AgouraFree__Title__c, ideaBoard.AgouraFree__Status__c, null, null, null,
+            ideaBoardRecordQuery += ' ORDER BY Title__c LIMIT :pSize OFFSET :offset';
+            List<IdeaBoard__c> ideaBoardList = Database.query(ideaBoardRecordQuery);   
+            for (IdeaBoard__c ideaBoard : ideaBoardList) {
+                homeResults.add(new ViewRecord(ideaBoard.Id, ideaBoard.Name, 'IdeaBoard__c', 'standard:drafts', 
+                                               ideaBoard.Title__c, ideaBoard.Status__c, null, null, null,
                                                ideaBoard.CreatedDate, ideaBoard.LastModifiedDate, ideaBoard.UserRecordAccess.HasEditAccess));
             }
             pSize = pSize - ideaBoardList.size();
@@ -240,11 +240,11 @@ public with sharing class ViewControllerExt {
         
         skipRecords = skipRecords - r.projectTotal;
         if (pSize > 0 && skipRecords <= 0 && offset >= 0) {
-            projectRecordQuery += ' ORDER BY AgouraFree__Title__c LIMIT :pSize OFFSET :offset';
-            List<AgouraFree__Project__c> projectList = Database.query(projectRecordQuery);    
-            for (AgouraFree__Project__c project : projectList) {
-                homeResults.add(new ViewRecord(project.Id, project.Name, 'AgouraFree__Project__c', 'standard:drafts', 
-                                               project.AgouraFree__Title__c, project.AgouraFree__Status__c, null, null, null, 
+            projectRecordQuery += ' ORDER BY Title__c LIMIT :pSize OFFSET :offset';
+            List<Project__c> projectList = Database.query(projectRecordQuery);    
+            for (Project__c project : projectList) {
+                homeResults.add(new ViewRecord(project.Id, project.Name, 'Project__c', 'standard:drafts', 
+                                               project.Title__c, project.Status__c, null, null, null, 
                                                project.CreatedDate, project.LastModifiedDate, project.UserRecordAccess.HasEditAccess));
             }
             pSize = pSize - projectList.size();
@@ -256,11 +256,11 @@ public with sharing class ViewControllerExt {
         skipRecords = skipRecords - r.sprintTotal;
         if (pSize > 0 && skipRecords <= 0 && offset >= 0) {
             if (statusKey == '' || statusKey == 'Open') {
-                sprintRecordQuery += ' ORDER BY AgouraFree__Sprint_Name__c LIMIT :pSize OFFSET :offset';
-                List<AgouraFree__Sprint__c> sprintList = Database.query(sprintRecordQuery);      
-                for (AgouraFree__Sprint__c sprint : sprintList) {
-                    homeResults.add(new ViewRecord(sprint.Id, sprint.Name, 'AgouraFree__Sprint__c', 'standard:work_order', 
-                                                   sprint.AgouraFree__Project__r.AgouraFree__Title__c + ' ' + sprint.AgouraFree__Sprint_Name__c, 'Open', null, null, null,
+                sprintRecordQuery += ' ORDER BY Sprint_Name__c LIMIT :pSize OFFSET :offset';
+                List<Sprint__c> sprintList = Database.query(sprintRecordQuery);      
+                for (Sprint__c sprint : sprintList) {
+                    homeResults.add(new ViewRecord(sprint.Id, sprint.Name, 'Sprint__c', 'standard:work_order', 
+                                                   sprint.Project__r.Title__c + ' ' + sprint.Sprint_Name__c, 'Open', null, null, null,
                                                    sprint.CreatedDate, sprint.LastModifiedDate, sprint.UserRecordAccess.HasEditAccess));
                 }
                 pSize = pSize - sprintList.size();
@@ -272,11 +272,11 @@ public with sharing class ViewControllerExt {
         
         skipRecords = skipRecords - r.taskTotal;
         if (pSize > 0 && skipRecords <= 0 && offset >= 0) {
-            taskRecordQuery += ' ORDER BY AgouraFree__Project__r.AgouraFree__Project_Abbreviation__c, AgouraFree__Task_Number_Int__c LIMIT :pSize OFFSET :offset';
-            List<AgouraFree__ProjectTask__c> taskList = Database.query(taskRecordQuery);    
-            for (AgouraFree__ProjectTask__c task : taskList) {
-                homeResults.add(new ViewRecord(task.Id, task.Name, 'AgouraFree__ProjectTask__c', 'standard:task', 
-                                               task.AgouraFree__Task_Number__c + ' ' + task.AgouraFree__Title__c, task.AgouraFree__Status__c, 
+            taskRecordQuery += ' ORDER BY Project__r.Project_Abbreviation__c, Task_Number_Int__c LIMIT :pSize OFFSET :offset';
+            List<ProjectTask__c> taskList = Database.query(taskRecordQuery);    
+            for (ProjectTask__c task : taskList) {
+                homeResults.add(new ViewRecord(task.Id, task.Name, 'ProjectTask__c', 'standard:task', 
+                                               task.Task_Number__c + ' ' + task.Title__c, task.Status__c, 
                                                null, null, null, task.CreatedDate, task.LastModifiedDate, task.UserRecordAccess.HasEditAccess));
             }
         }  
@@ -309,13 +309,13 @@ public with sharing class ViewControllerExt {
     @AuraEnabled
     public static PagedResult getViewRecordList(String filters, Decimal pageSize, Decimal pageNumber, String viewName) {
         // CRUD and FLS Enforcement
-        if (!Schema.sObjectType.AgouraFree__IdeaBoard__c.isAccessible() || 
-            !Schema.sObjectType.AgouraFree__Project__c.isAccessible() || 
-            !Schema.sObjectType.AgouraFree__Sprint__c.isAccessible() || 
-            !Schema.sObjectType.AgouraFree__ProjectItem__c.isAccessible() || 
-            !Schema.sObjectType.AgouraFree__ProjectTask__c.isAccessible() || 
-            !Schema.sObjectType.AgouraFree__Tag__c.isAccessible() || 
-            !Schema.sObjectType.AgouraFree__AnchorStory__c.isAccessible()) {
+        if (!Schema.sObjectType.IdeaBoard__c.isAccessible() || 
+            !Schema.sObjectType.Project__c.isAccessible() || 
+            !Schema.sObjectType.Sprint__c.isAccessible() || 
+            !Schema.sObjectType.ProjectItem__c.isAccessible() || 
+            !Schema.sObjectType.ProjectTask__c.isAccessible() || 
+            !Schema.sObjectType.Tag__c.isAccessible() || 
+            !Schema.sObjectType.AnchorStory__c.isAccessible()) {
                 System.debug('Insufficient access');
                 AuraHandledException e = new AuraHandledException('Insufficient access');
                 e.setMessage('Insufficient access');
@@ -339,250 +339,250 @@ public with sharing class ViewControllerExt {
         
         if (viewName == 'Anchor Stories') {
             // Anchor Story Query   
-            List<AgouraFree__AnchorStory__c> results = new List<AgouraFree__AnchorStory__c>();
+            List<AnchorStory__c> results = new List<AnchorStory__c>();
             if (filter.searchKey == '') {
-                totalQuery = 'SELECT count() FROM AgouraFree__AnchorStory__c WHERE Id != null';
-                recordQuery = 'SELECT Id, Name, AgouraFree__Points__c, AgouraFree__Search_Terms__c, AgouraFree__Title__c' +
-                    ' FROM AgouraFree__AnchorStory__c ORDER BY AgouraFree__Points__c, Name LIMIT :pSize OFFSET :offset';
+                totalQuery = 'SELECT count() FROM AnchorStory__c WHERE Id != null';
+                recordQuery = 'SELECT Id, Name, Points__c, Search_Terms__c, Title__c' +
+                    ' FROM AnchorStory__c ORDER BY Points__c, Name LIMIT :pSize OFFSET :offset';
                 r.total = Database.countQuery(totalQuery);
-                List<AgouraFree__AnchorStory__c> itemList = Database.query(recordQuery);
+                List<AnchorStory__c> itemList = Database.query(recordQuery);
                 results = itemList;
             } else {
-                totalQuery = 'FIND :searchTerm IN ALL FIELDS RETURNING AgouraFree__AnchorStory__c';
+                totalQuery = 'FIND :searchTerm IN ALL FIELDS RETURNING AnchorStory__c';
                 recordQuery = 'FIND :searchTerm IN ALL FIELDS RETURNING' +
-                    ' AgouraFree__AnchorStory__c (Id, Name, AgouraFree__Points__c, AgouraFree__Search_Terms__c, AgouraFree__Title__c' +
-                    ' ORDER BY AgouraFree__Points__c, Name LIMIT :pSize OFFSET :offset)';
+                    ' AnchorStory__c (Id, Name, Points__c, Search_Terms__c, Title__c' +
+                    ' ORDER BY Points__c, Name LIMIT :pSize OFFSET :offset)';
                 List<List<SObject>> searchQueryCount = Search.query(totalQuery); 
-                List<AgouraFree__AnchorStory__c> searchResultsCount = (List<AgouraFree__AnchorStory__c>) searchQueryCount[0];
+                List<AnchorStory__c> searchResultsCount = (List<AnchorStory__c>) searchQueryCount[0];
                 r.total = searchResultsCount.size();
                 List<List<SObject>> searchResults = Search.query(recordQuery); 
-                results = ((List<AgouraFree__AnchorStory__c>) searchResults[0]);   
+                results = ((List<AnchorStory__c>) searchResults[0]);   
             }            
-            for (AgouraFree__AnchorStory__c item : results) {
-                queryResults.add(new ViewRecord(item.Id, item.Name, 'AgouraFree__AnchorStory__c', 'standard:task', item.AgouraFree__Title__c, 
-                                                null, null, item.AgouraFree__Points__c, item.AgouraFree__Search_Terms__c, null, null, false));
+            for (AnchorStory__c item : results) {
+                queryResults.add(new ViewRecord(item.Id, item.Name, 'AnchorStory__c', 'standard:task', item.Title__c, 
+                                                null, null, item.Points__c, item.Search_Terms__c, null, null, false));
             }
             
         } else if (viewName == 'Idea Boards') {
             // Idea Board Query
-            List<AgouraFree__IdeaBoard__c> results = new List<AgouraFree__IdeaBoard__c>();
+            List<IdeaBoard__c> results = new List<IdeaBoard__c>();
             if (filter.searchKey == '') {
-                totalQuery = 'SELECT count() FROM AgouraFree__IdeaBoard__c WHERE AgouraFree__Status__c LIKE :statusKey';
-                recordQuery = 'SELECT Id, Name, AgouraFree__Title__c, AgouraFree__Status__c, CreatedDate, LastModifiedDate' +
-                    ' FROM AgouraFree__IdeaBoard__c WHERE AgouraFree__Status__c LIKE :statusKey';
+                totalQuery = 'SELECT count() FROM IdeaBoard__c WHERE Status__c LIKE :statusKey';
+                recordQuery = 'SELECT Id, Name, Title__c, Status__c, CreatedDate, LastModifiedDate' +
+                    ' FROM IdeaBoard__c WHERE Status__c LIKE :statusKey';
                 if (assignedKey != '') {
                     totalQuery += ' AND OwnerId = :userId';
                     recordQuery += ' AND OwnerId = :userId';
                 }
                 r.total = Database.countQuery(totalQuery);
-                recordQuery += ' ORDER BY AgouraFree__Title__c LIMIT :pSize OFFSET :offset';
-                List<AgouraFree__IdeaBoard__c> itemList = Database.query(recordQuery);
+                recordQuery += ' ORDER BY Title__c LIMIT :pSize OFFSET :offset';
+                List<IdeaBoard__c> itemList = Database.query(recordQuery);
                 results = itemList;
             } else {
-                totalQuery = 'FIND :searchTerm IN ALL FIELDS RETURNING AgouraFree__IdeaBoard__c (Id WHERE AgouraFree__Status__c LIKE :statusKey)';
+                totalQuery = 'FIND :searchTerm IN ALL FIELDS RETURNING IdeaBoard__c (Id WHERE Status__c LIKE :statusKey)';
                 recordQuery = 'FIND :searchTerm IN ALL FIELDS RETURNING ' +
-                    ' AgouraFree__IdeaBoard__c (Id, Name, AgouraFree__Title__c, AgouraFree__Status__c, CreatedDate, LastModifiedDate WHERE AgouraFree__Status__c LIKE :statusKey';
+                    ' IdeaBoard__c (Id, Name, Title__c, Status__c, CreatedDate, LastModifiedDate WHERE Status__c LIKE :statusKey';
                 if (assignedKey != '') {
-                    totalQuery = 'FIND :searchTerm IN ALL FIELDS RETURNING AgouraFree__IdeaBoard__c (Id WHERE AgouraFree__Status__c LIKE :statusKey AND OwnerId = :userId)';
+                    totalQuery = 'FIND :searchTerm IN ALL FIELDS RETURNING IdeaBoard__c (Id WHERE Status__c LIKE :statusKey AND OwnerId = :userId)';
                     recordQuery += ' AND OwnerId = :userId';
                 }    
                 List<List<SObject>> searchQueryCount = Search.query(totalQuery); 
-                List<AgouraFree__IdeaBoard__c> searchResultsCount = (List<AgouraFree__IdeaBoard__c>) searchQueryCount[0];
+                List<IdeaBoard__c> searchResultsCount = (List<IdeaBoard__c>) searchQueryCount[0];
                 r.total = searchResultsCount.size();
-                recordQuery += ' ORDER BY AgouraFree__Title__c LIMIT :pSize OFFSET :offset)';
+                recordQuery += ' ORDER BY Title__c LIMIT :pSize OFFSET :offset)';
                 List<List<SObject>> searchResults = Search.query(recordQuery); 
-                results = ((List<AgouraFree__IdeaBoard__c>) searchResults[0]);   
+                results = ((List<IdeaBoard__c>) searchResults[0]);   
             }           
-            for (AgouraFree__IdeaBoard__c item : results) {
-                queryResults.add(new ViewRecord(item.Id, item.Name, 'AgouraFree__IdeaBoard__c', 'standard:drafts', 
-                                                item.AgouraFree__Title__c, item.AgouraFree__Status__c, null, null, null,
+            for (IdeaBoard__c item : results) {
+                queryResults.add(new ViewRecord(item.Id, item.Name, 'IdeaBoard__c', 'standard:drafts', 
+                                                item.Title__c, item.Status__c, null, null, null,
                                                 item.CreatedDate, item.LastModifiedDate, false));
             } 
             
         } else if (viewName == 'Project Tasks') {
             // Project Task Query
-            List<AgouraFree__ProjectTask__c> results = new List<AgouraFree__ProjectTask__c>();
+            List<ProjectTask__c> results = new List<ProjectTask__c>();
             if (filter.searchKey == '') {
-                totalQuery = 'SELECT count() FROM AgouraFree__ProjectTask__c WHERE AgouraFree__Status__c LIKE :statusKey';
-                recordQuery = 'SELECT Id, Name, AgouraFree__Task_Number_Int__c, AgouraFree__Task_Number__c, AgouraFree__Title__c, AgouraFree__Formatted_Type__c,' + 
-                    ' AgouraFree__Status__c, CreatedDate, LastModifiedDate, AgouraFree__Project__r.AgouraFree__Project_Abbreviation__c' +
-                    ' FROM AgouraFree__ProjectTask__c WHERE AgouraFree__Status__c LIKE :statusKey';
+                totalQuery = 'SELECT count() FROM ProjectTask__c WHERE Status__c LIKE :statusKey';
+                recordQuery = 'SELECT Id, Name, Task_Number_Int__c, Task_Number__c, Title__c, Formatted_Type__c,' + 
+                    ' Status__c, CreatedDate, LastModifiedDate, Project__r.Project_Abbreviation__c' +
+                    ' FROM ProjectTask__c WHERE Status__c LIKE :statusKey';
                 if (assignedKey != '') {
-                    totalQuery += ' AND AgouraFree__Assigned_To__c = :userId';
-                    recordQuery += ' AND AgouraFree__Assigned_To__c = :userId';
+                    totalQuery += ' AND Assigned_To__c = :userId';
+                    recordQuery += ' AND Assigned_To__c = :userId';
                 }
                 r.total = Database.countQuery(totalQuery);
-                recordQuery += ' ORDER BY AgouraFree__Project__r.AgouraFree__Project_Abbreviation__c, AgouraFree__Task_Number_Int__c LIMIT :pSize OFFSET :offset';
-                List<AgouraFree__ProjectTask__c> itemList = Database.query(recordQuery);
+                recordQuery += ' ORDER BY Project__r.Project_Abbreviation__c, Task_Number_Int__c LIMIT :pSize OFFSET :offset';
+                List<ProjectTask__c> itemList = Database.query(recordQuery);
                 results = itemList;
             } else {
-                totalQuery = 'FIND :searchTerm IN ALL FIELDS RETURNING AgouraFree__ProjectTask__c (Id WHERE AgouraFree__Status__c LIKE :statusKey)';
+                totalQuery = 'FIND :searchTerm IN ALL FIELDS RETURNING ProjectTask__c (Id WHERE Status__c LIKE :statusKey)';
                 recordQuery = 'FIND :searchTerm IN ALL FIELDS RETURNING ' +
-                    ' AgouraFree__ProjectTask__c (Id, Name, AgouraFree__Task_Number_Int__c, AgouraFree__Task_Number__c, AgouraFree__Title__c, AgouraFree__Formatted_Type__c,' +
-                    ' AgouraFree__Status__c, CreatedDate, LastModifiedDate, AgouraFree__Project__r.AgouraFree__Project_Abbreviation__c' +
-                    ' WHERE AgouraFree__Status__c LIKE :statusKey';
+                    ' ProjectTask__c (Id, Name, Task_Number_Int__c, Task_Number__c, Title__c, Formatted_Type__c,' +
+                    ' Status__c, CreatedDate, LastModifiedDate, Project__r.Project_Abbreviation__c' +
+                    ' WHERE Status__c LIKE :statusKey';
                 if (assignedKey != '') {
-                    totalQuery = 'FIND :searchTerm IN ALL FIELDS RETURNING AgouraFree__ProjectTask__c (Id WHERE AgouraFree__Status__c LIKE :statusKey' +
-                        ' AND AgouraFree__Assigned_To__c = :userId)';
-                    recordQuery += ' AND AgouraFree__Assigned_To__c = :userId';
+                    totalQuery = 'FIND :searchTerm IN ALL FIELDS RETURNING ProjectTask__c (Id WHERE Status__c LIKE :statusKey' +
+                        ' AND Assigned_To__c = :userId)';
+                    recordQuery += ' AND Assigned_To__c = :userId';
                 }    
                 List<List<SObject>> searchQueryCount = Search.query(totalQuery); 
-                List<AgouraFree__ProjectTask__c> searchResultsCount = (List<AgouraFree__ProjectTask__c>) searchQueryCount[0];
+                List<ProjectTask__c> searchResultsCount = (List<ProjectTask__c>) searchQueryCount[0];
                 r.total = searchResultsCount.size();
-                recordQuery += ' ORDER BY AgouraFree__Project__r.AgouraFree__Project_Abbreviation__c, AgouraFree__Task_Number_Int__c LIMIT :pSize OFFSET :offset)';
+                recordQuery += ' ORDER BY Project__r.Project_Abbreviation__c, Task_Number_Int__c LIMIT :pSize OFFSET :offset)';
                 List<List<SObject>> searchResults = Search.query(recordQuery); 
-                results = ((List<AgouraFree__ProjectTask__c>) searchResults[0]);   
+                results = ((List<ProjectTask__c>) searchResults[0]);   
             }            
-            for (AgouraFree__ProjectTask__c item : results) {
-                queryResults.add(new ViewRecord(item.Id, item.Name, 'AgouraFree__ProjectTask__c', 'standard:task', 
-                                                item.AgouraFree__Task_Number__c + ' ' + item.AgouraFree__Title__c, item.AgouraFree__Status__c, 
+            for (ProjectTask__c item : results) {
+                queryResults.add(new ViewRecord(item.Id, item.Name, 'ProjectTask__c', 'standard:task', 
+                                                item.Task_Number__c + ' ' + item.Title__c, item.Status__c, 
                                                 null, null, null, item.CreatedDate, item.LastModifiedDate, false));
             }
             
         } else if (viewName == 'Projects' || viewName == 'Project Templates') {
             // Project Query
-            List<AgouraFree__Project__c> results = new List<AgouraFree__Project__c>();
+            List<Project__c> results = new List<Project__c>();
             String isProjectTemplate = '';
             if (viewName == 'Project Templates') {
-                isProjectTemplate = ' AND AgouraFree__IsTemplate__c = TRUE';                 
+                isProjectTemplate = ' AND IsTemplate__c = TRUE';                 
             }
             if (filter.searchKey == '') {
-                totalQuery = 'SELECT count() FROM AgouraFree__Project__c WHERE AgouraFree__Status__c LIKE :statusKey' + isProjectTemplate;
-                recordQuery = 'SELECT Id, Name, AgouraFree__Title__c, AgouraFree__Status__c, CreatedDate, LastModifiedDate ' +
-                    ' FROM AgouraFree__Project__c WHERE AgouraFree__Status__c LIKE :statusKey' + isProjectTemplate;
+                totalQuery = 'SELECT count() FROM Project__c WHERE Status__c LIKE :statusKey' + isProjectTemplate;
+                recordQuery = 'SELECT Id, Name, Title__c, Status__c, CreatedDate, LastModifiedDate ' +
+                    ' FROM Project__c WHERE Status__c LIKE :statusKey' + isProjectTemplate;
                 if (assignedKey != '') {
-                    totalQuery += ' AND Id IN (SELECT AgouraFree__Project__c FROM AgouraFree__ProjectItem__c WHERE AgouraFree__User__c = :userId' +
-                        ' AND AgouraFree__Type__c != \'Project Link\')';
-                    recordQuery += ' AND Id IN (SELECT AgouraFree__Project__c FROM AgouraFree__ProjectItem__c WHERE AgouraFree__User__c = :userId' +
-                        ' AND AgouraFree__Type__c != \'Project Link\')';
+                    totalQuery += ' AND Id IN (SELECT Project__c FROM ProjectItem__c WHERE User__c = :userId' +
+                        ' AND Type__c != \'Project Link\')';
+                    recordQuery += ' AND Id IN (SELECT Project__c FROM ProjectItem__c WHERE User__c = :userId' +
+                        ' AND Type__c != \'Project Link\')';
                 }
                 r.total = Database.countQuery(totalQuery);
-                recordQuery += ' ORDER BY AgouraFree__Title__c LIMIT :pSize OFFSET :offset';
-                List<AgouraFree__Project__c> itemList = Database.query(recordQuery);
+                recordQuery += ' ORDER BY Title__c LIMIT :pSize OFFSET :offset';
+                List<Project__c> itemList = Database.query(recordQuery);
                 results = itemList;
             } else {
-                totalQuery = 'FIND :searchTerm IN ALL FIELDS RETURNING AgouraFree__Project__c (Id WHERE AgouraFree__Status__c LIKE :statusKey' +
+                totalQuery = 'FIND :searchTerm IN ALL FIELDS RETURNING Project__c (Id WHERE Status__c LIKE :statusKey' +
                      isProjectTemplate + ')';
                 recordQuery = 'FIND :searchTerm IN ALL FIELDS RETURNING' +
-                    ' AgouraFree__Project__c (Id, Name, AgouraFree__Title__c, AgouraFree__Status__c, CreatedDate, LastModifiedDate WHERE AgouraFree__Status__c LIKE :statusKey' +
+                    ' Project__c (Id, Name, Title__c, Status__c, CreatedDate, LastModifiedDate WHERE Status__c LIKE :statusKey' +
                      isProjectTemplate;
                 if (assignedKey != '') {
-                    totalQuery = 'FIND :searchTerm IN ALL FIELDS RETURNING AgouraFree__Project__c (Id WHERE AgouraFree__Status__c LIKE :statusKey' + isProjectTemplate +
-                        ' AND Id IN (SELECT AgouraFree__Project__c FROM AgouraFree__ProjectItem__c  WHERE AgouraFree__User__c = :userId AND AgouraFree__Type__c != \'Project Link\'))';
-                    recordQuery += ' AND Id IN (SELECT AgouraFree__Project__c FROM AgouraFree__ProjectItem__c' +
-                        ' WHERE AgouraFree__User__c = :userId AND AgouraFree__Type__c != \'Project Link\')';
+                    totalQuery = 'FIND :searchTerm IN ALL FIELDS RETURNING Project__c (Id WHERE Status__c LIKE :statusKey' + isProjectTemplate +
+                        ' AND Id IN (SELECT Project__c FROM ProjectItem__c  WHERE User__c = :userId AND Type__c != \'Project Link\'))';
+                    recordQuery += ' AND Id IN (SELECT Project__c FROM ProjectItem__c' +
+                        ' WHERE User__c = :userId AND Type__c != \'Project Link\')';
                 }    
                 List<List<SObject>> searchQueryCount = Search.query(totalQuery); 
-                List<AgouraFree__Project__c> searchResultsCount = (List<AgouraFree__Project__c>) searchQueryCount[0];
+                List<Project__c> searchResultsCount = (List<Project__c>) searchQueryCount[0];
                 r.total = searchResultsCount.size();
-                recordQuery += ' ORDER BY AgouraFree__Title__c LIMIT :pSize OFFSET :offset)';
+                recordQuery += ' ORDER BY Title__c LIMIT :pSize OFFSET :offset)';
                 List<List<SObject>> searchResults = Search.query(recordQuery); 
-                results = ((List<AgouraFree__Project__c>) searchResults[0]);   
+                results = ((List<Project__c>) searchResults[0]);   
             }            
-            for (AgouraFree__Project__c item : results) {
-                queryResults.add(new ViewRecord(item.Id, item.Name, 'AgouraFree__Project__c', 'standard:drafts', item.AgouraFree__Title__c, item.AgouraFree__Status__c, 
+            for (Project__c item : results) {
+                queryResults.add(new ViewRecord(item.Id, item.Name, 'Project__c', 'standard:drafts', item.Title__c, item.Status__c, 
                                                 null, null, null, item.CreatedDate, item.LastModifiedDate, false));
             }
             
         } else if (viewName == 'Sprints') {
             // Sprint Query
-            List<AgouraFree__Sprint__c> results = new List<AgouraFree__Sprint__c>();
+            List<Sprint__c> results = new List<Sprint__c>();
             if (filter.searchKey == '') {
-                totalQuery = 'SELECT count() FROM AgouraFree__Sprint__c WHERE Id != null';
-                recordQuery = 'SELECT Id, Name, AgouraFree__Project__r.AgouraFree__Title__c, AgouraFree__Sprint_Number__c, AgouraFree__Start_Date__c, AgouraFree__End_Date__c,' + 
-                    ' CreatedDate, LastModifiedDate FROM AgouraFree__Sprint__c WHERE Id != null';
+                totalQuery = 'SELECT count() FROM Sprint__c WHERE Id != null';
+                recordQuery = 'SELECT Id, Name, Project__r.Title__c, Sprint_Number__c, Start_Date__c, End_Date__c,' + 
+                    ' CreatedDate, LastModifiedDate FROM Sprint__c WHERE Id != null';
                 if (statusKey == 'Open%') {
-                    totalQuery += ' AND AgouraFree__Start_Date__c <= today AND (AgouraFree__End_Date__c = null or AgouraFree__End_Date__c >= today)';
-                    recordQuery += ' AND AgouraFree__Start_Date__c <= today AND (AgouraFree__End_Date__c = null or AgouraFree__End_Date__c >= today)';
+                    totalQuery += ' AND Start_Date__c <= today AND (End_Date__c = null or End_Date__c >= today)';
+                    recordQuery += ' AND Start_Date__c <= today AND (End_Date__c = null or End_Date__c >= today)';
                 } else if (statusKey == 'Closed%') {
-                    totalQuery += ' AND (AgouraFree__Start_Date__c > today OR AgouraFree__End_Date__c < today)';
-                    recordQuery += ' AND (AgouraFree__Start_Date__c > today OR AgouraFree__End_Date__c < today)';
+                    totalQuery += ' AND (Start_Date__c > today OR End_Date__c < today)';
+                    recordQuery += ' AND (Start_Date__c > today OR End_Date__c < today)';
                 }
                 if (assignedKey != '') {
-                    totalQuery += ' AND AgouraFree__Project__c IN (SELECT AgouraFree__Project__c FROM AgouraFree__ProjectItem__c WHERE AgouraFree__User__c = :userId' + 
-                        ' AND AgouraFree__Type__c != \'Project Link\')';
-                    recordQuery += ' AND AgouraFree__Project__c IN (SELECT AgouraFree__Project__c FROM AgouraFree__ProjectItem__c WHERE AgouraFree__User__c = :userId' + 
-                        ' AND AgouraFree__Type__c != \'Project Link\')';
+                    totalQuery += ' AND Project__c IN (SELECT Project__c FROM ProjectItem__c WHERE User__c = :userId' + 
+                        ' AND Type__c != \'Project Link\')';
+                    recordQuery += ' AND Project__c IN (SELECT Project__c FROM ProjectItem__c WHERE User__c = :userId' + 
+                        ' AND Type__c != \'Project Link\')';
                 }
                 r.total = Database.countQuery(totalQuery);
-                recordQuery += ' ORDER BY AgouraFree__Project__r.AgouraFree__Title__c, AgouraFree__Sprint_Number__c LIMIT :pSize OFFSET :offset';
-                List<AgouraFree__Sprint__c> itemList = Database.query(recordQuery);
+                recordQuery += ' ORDER BY Project__r.Title__c, Sprint_Number__c LIMIT :pSize OFFSET :offset';
+                List<Sprint__c> itemList = Database.query(recordQuery);
                 results = itemList;
             } else {
-                totalQuery = 'FIND :searchTerm IN ALL FIELDS RETURNING AgouraFree__Sprint__c';
-                recordQuery = 'FIND :searchTerm IN ALL FIELDS RETURNING AgouraFree__Sprint__c (Id, Name, AgouraFree__Project__r.AgouraFree__Title__c,' +
-                    ' AgouraFree__Sprint_Number__c, AgouraFree__Start_Date__c, AgouraFree__End_Date__c, CreatedDate, LastModifiedDate';
+                totalQuery = 'FIND :searchTerm IN ALL FIELDS RETURNING Sprint__c';
+                recordQuery = 'FIND :searchTerm IN ALL FIELDS RETURNING Sprint__c (Id, Name, Project__r.Title__c,' +
+                    ' Sprint_Number__c, Start_Date__c, End_Date__c, CreatedDate, LastModifiedDate';
                 if (assignedKey != '') {
-                    totalQuery += ' (Id WHERE AgouraFree__Project__c IN (SELECT AgouraFree__Project__c FROM AgouraFree__ProjectItem__c ' +
-                        ' WHERE AgouraFree__User__c = :userId AND AgouraFree__Type__c != \'Project Link\')';
-                    recordQuery += ' WHERE AgouraFree__Project__c IN (SELECT AgouraFree__Project__c FROM AgouraFree__ProjectItem__c ' +
-                        ' WHERE AgouraFree__User__c = :userId  AND AgouraFree__Type__c != \'Project Link\')';
+                    totalQuery += ' (Id WHERE Project__c IN (SELECT Project__c FROM ProjectItem__c ' +
+                        ' WHERE User__c = :userId AND Type__c != \'Project Link\')';
+                    recordQuery += ' WHERE Project__c IN (SELECT Project__c FROM ProjectItem__c ' +
+                        ' WHERE User__c = :userId  AND Type__c != \'Project Link\')';
                     if (statusKey == 'Open%') {
-                        totalQuery += ' AND AgouraFree__Start_Date__c <= today AND (AgouraFree__End_Date__c = null or AgouraFree__End_Date__c >= today)';
-                        recordQuery += ' AND AgouraFree__Start_Date__c <= today AND (AgouraFree__End_Date__c = null or AgouraFree__End_Date__c >= today)';
+                        totalQuery += ' AND Start_Date__c <= today AND (End_Date__c = null or End_Date__c >= today)';
+                        recordQuery += ' AND Start_Date__c <= today AND (End_Date__c = null or End_Date__c >= today)';
                     } else if (statusKey == 'Closed%') {
-                        totalQuery += ' AND (AgouraFree__Start_Date__c > today OR AgouraFree__End_Date__c < today)';  
-                        recordQuery += ' AND (AgouraFree__Start_Date__c > today OR AgouraFree__End_Date__c < today)';
+                        totalQuery += ' AND (Start_Date__c > today OR End_Date__c < today)';  
+                        recordQuery += ' AND (Start_Date__c > today OR End_Date__c < today)';
                     }
                     totalQuery += ')';
                 } else {
                     if (statusKey == 'Open%') {
-                        totalQuery += ' (Id WHERE AgouraFree__Start_Date__c <= today AND (AgouraFree__End_Date__c = null or AgouraFree__End_Date__c >= today))';
-                        recordQuery += ' WHERE AgouraFree__Start_Date__c <= today AND (AgouraFree__End_Date__c = null or AgouraFree__End_Date__c >= today)';
+                        totalQuery += ' (Id WHERE Start_Date__c <= today AND (End_Date__c = null or End_Date__c >= today))';
+                        recordQuery += ' WHERE Start_Date__c <= today AND (End_Date__c = null or End_Date__c >= today)';
                     } else if (statusKey == 'Closed%') {
-                        totalQuery += ' (Id WHERE AgouraFree__Start_Date__c > today OR AgouraFree__End_Date__c < today)';
-                        recordQuery += ' WHERE AgouraFree__Start_Date__c > today OR AgouraFree__End_Date__c < today';
+                        totalQuery += ' (Id WHERE Start_Date__c > today OR End_Date__c < today)';
+                        recordQuery += ' WHERE Start_Date__c > today OR End_Date__c < today';
                     }                   
                 }    
                 List<List<SObject>> searchQueryCount = Search.query(totalQuery); 
-                List<AgouraFree__Sprint__c> searchResultsCount = (List<AgouraFree__Sprint__c>) searchQueryCount[0];
+                List<Sprint__c> searchResultsCount = (List<Sprint__c>) searchQueryCount[0];
                 r.total = searchResultsCount.size();
-                recordQuery += ' ORDER BY AgouraFree__Project__r.AgouraFree__Title__c, AgouraFree__Sprint_Number__c LIMIT :pSize OFFSET :offset)';
+                recordQuery += ' ORDER BY Project__r.Title__c, Sprint_Number__c LIMIT :pSize OFFSET :offset)';
                 List<List<SObject>> searchResults = Search.query(recordQuery); 
-                results = ((List<AgouraFree__Sprint__c>) searchResults[0]);   
+                results = ((List<Sprint__c>) searchResults[0]);   
             }            
             Date thisDay = Date.today();
             String sprintStatus;
-            for (AgouraFree__Sprint__c item : results) {
+            for (Sprint__c item : results) {
                 sprintStatus = 'Closed';
-                if (item.AgouraFree__Start_Date__c <= thisDay && (item.AgouraFree__End_Date__c == null || item.AgouraFree__End_Date__c >= thisDay)) {
+                if (item.Start_Date__c <= thisDay && (item.End_Date__c == null || item.End_Date__c >= thisDay)) {
                     sprintStatus = 'Open';
                 }
-                queryResults.add(new ViewRecord(item.Id, item.Name, 'AgouraFree__Sprint__c', 'standard:work_order', 
-                                                item.AgouraFree__Project__r.AgouraFree__Title__c + ' Sprint ' + item.AgouraFree__Sprint_Number__c, 
+                queryResults.add(new ViewRecord(item.Id, item.Name, 'Sprint__c', 'standard:work_order', 
+                                                item.Project__r.Title__c + ' Sprint ' + item.Sprint_Number__c, 
                                                 sprintStatus, null, null, null, item.CreatedDate, item.LastModifiedDate, false));                
             } 
             
         } else if (viewName == 'Tags') {
             // Tag Query
-            List<AgouraFree__Tag__c> results = new List<AgouraFree__Tag__c>();
+            List<Tag__c> results = new List<Tag__c>();
             if (filter.searchKey == '') {
-                totalQuery = 'SELECT count() FROM AgouraFree__Tag__c WHERE Id != null';
-                recordQuery = 'SELECT Id, Name, AgouraFree__For_IdeaBoards__c, AgouraFree__For_ProjectTasks__c, AgouraFree__For_Projects__c, CreatedDate, LastModifiedDate' +
-                    ' FROM AgouraFree__Tag__c ORDER BY Name LIMIT :pSize OFFSET :offset';
+                totalQuery = 'SELECT count() FROM Tag__c WHERE Id != null';
+                recordQuery = 'SELECT Id, Name, For_IdeaBoards__c, For_ProjectTasks__c, For_Projects__c, CreatedDate, LastModifiedDate' +
+                    ' FROM Tag__c ORDER BY Name LIMIT :pSize OFFSET :offset';
                 r.total = Database.countQuery(totalQuery);
-                List<AgouraFree__Tag__c> itemList = Database.query(recordQuery);
+                List<Tag__c> itemList = Database.query(recordQuery);
                 results = itemList;
             } else {
-                totalQuery = 'FIND :searchTerm IN ALL FIELDS RETURNING AgouraFree__Tag__c';
+                totalQuery = 'FIND :searchTerm IN ALL FIELDS RETURNING Tag__c';
                 recordQuery = 'FIND :searchTerm IN ALL FIELDS RETURNING' +
-                    ' AgouraFree__Tag__c (Id, Name, AgouraFree__For_IdeaBoards__c, AgouraFree__For_ProjectTasks__c, AgouraFree__For_Projects__c, CreatedDate, LastModifiedDate' +
+                    ' Tag__c (Id, Name, For_IdeaBoards__c, For_ProjectTasks__c, For_Projects__c, CreatedDate, LastModifiedDate' +
                     ' ORDER BY Name LIMIT :pSize OFFSET :offset)';
                 List<List<SObject>> searchQueryCount = Search.query(totalQuery); 
-                List<AgouraFree__Tag__c> searchResultsCount = (List<AgouraFree__Tag__c>) searchQueryCount[0];
+                List<Tag__c> searchResultsCount = (List<Tag__c>) searchQueryCount[0];
                 r.total = searchResultsCount.size();
                 List<List<SObject>> searchResults = Search.query(recordQuery); 
-                results = ((List<AgouraFree__Tag__c>) searchResults[0]);   
+                results = ((List<Tag__c>) searchResults[0]);   
             }            
-            for (AgouraFree__Tag__c item : results) {
+            for (Tag__c item : results) {
                 otherString = '';
-                if (item.AgouraFree__For_IdeaBoards__c) {otherString += 'Idea Boards, ';}
-                if (item.AgouraFree__For_ProjectTasks__c) {otherString += 'Project Tasks, ';}
-                if (item.AgouraFree__For_Projects__c) {otherString += 'Projects, ';}
+                if (item.For_IdeaBoards__c) {otherString += 'Idea Boards, ';}
+                if (item.For_ProjectTasks__c) {otherString += 'Project Tasks, ';}
+                if (item.For_Projects__c) {otherString += 'Projects, ';}
                 if (otherString.length() > 3) {
                     otherString = otherString.substring(0, otherString.length() - 2);
                 }
-                queryResults.add(new ViewRecord(item.Id, item.Name, 'AgouraFree__Tag__c', 'standard:topic', item.Name, 
+                queryResults.add(new ViewRecord(item.Id, item.Name, 'Tag__c', 'standard:topic', item.Name, 
                                                 null, null, null, otherString, item.CreatedDate, item.LastModifiedDate, false));
             }
             
@@ -600,11 +600,11 @@ public with sharing class ViewControllerExt {
         result.canCreateTag = false;
         
         if (hasProjects) {
-            if (AgouraFree__AnchorStory__c.sObjectType.getDescribe().isCreateable()) {
+            if (AnchorStory__c.sObjectType.getDescribe().isCreateable()) {
                 result.canCreateAnchorStory = true;
             }
         }
-        if (AgouraFree__Tag__c.sObjectType.getDescribe().isCreateable()) {
+        if (Tag__c.sObjectType.getDescribe().isCreateable()) {
             result.canCreateTag = true;
         }
         return result;
@@ -613,7 +613,7 @@ public with sharing class ViewControllerExt {
     @AuraEnabled
     public static Boolean hasProjectObject() {
         Map<String, Schema.SObjectType> gd = Schema.getGlobalDescribe(); 
-        return gd.containsKey('AgouraFree__Project__c');
+        return gd.containsKey('Project__c');
     }
     
     @AuraEnabled        
