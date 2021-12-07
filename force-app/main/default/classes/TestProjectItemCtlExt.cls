@@ -2,11 +2,11 @@
 public class TestProjectItemCtlExt {
     
     static testMethod void test_recordAccess() {
-        AgouraFree__Project__c testProject = createTestProject('Test Project', 'TESTTESTTEST');
-        AgouraFree__ProjectItem__c testProjectItem = createTestProjectItem(testProject.Id, 'Project Swim Lane', 'Test Swim Lane');       
+        Project__c testProject = createTestProject('Test Project', 'TESTTESTTEST');
+        ProjectItem__c testProjectItem = createTestProjectItem(testProject.Id, 'Project Swim Lane', 'Test Swim Lane');       
         
         Test.startTest();
-        List<UserRecordAccess> results = AgouraFree.ProjectItemControllerExt.recordAccess(testProjectItem.Id);
+        List<UserRecordAccess> results = ProjectItemControllerExt.recordAccess(testProjectItem.Id);
         Test.stopTest();
         
         System.assertEquals(1, results.size());
@@ -14,35 +14,35 @@ public class TestProjectItemCtlExt {
     }
     
     static testMethod void test_getWebPageTitle() {
-        AgouraFree__Project__c testProject = createTestProject('Test Project', 'TESTTESTTEST');
-        AgouraFree__ProjectItem__c testProjectItem = createTestProjectItem(testProject.Id, 'Project Swim Lane', 'Test Swim Lane');  
+        Project__c testProject = createTestProject('Test Project', 'TESTTESTTEST');
+        ProjectItem__c testProjectItem = createTestProjectItem(testProject.Id, 'Project Swim Lane', 'Test Swim Lane');  
         User testUser = createTestUser('userPI1','standarduserPI1@agourasoftware.com','Testing PI1','standarduserPI1@agourasoftware.com');      
         
         Test.startTest();
-        AgouraFree__ProjectItem__c results = AgouraFree.ProjectItemControllerExt.getWebPageTitle(testProjectItem.Id);
+        ProjectItem__c results = ProjectItemControllerExt.getWebPageTitle(testProjectItem.Id);
         System.runas(testUser) {
             try {
-                AgouraFree__ProjectItem__c accessResult = AgouraFree.ProjectItemControllerExt.getWebPageTitle(testProjectItem.Id); 
+                ProjectItem__c accessResult = ProjectItemControllerExt.getWebPageTitle(testProjectItem.Id); 
             } catch (AuraHandledException e) {
                 System.assertEquals('Insufficient access', e.getMessage());
             }
         }
         Test.stopTest();
         
-        System.assertEquals('Test Swim Lane', results.get('AgouraFree__Title__c'));
+        System.assertEquals('Test Swim Lane', results.get('Title__c'));
     }
     
     static testMethod void test_getUsers() {
         Id userId = UserInfo.getUserId();
-        AgouraFree__Project__c testProject = createTestProject('Test Project', 'TESTTESTTEST');
-        AgouraFree__ProjectItem__c testProjectItem = createTestProjectStakeholder(userId, testProject.Id, 'Executive Sponsor', 'Informed');
+        Project__c testProject = createTestProject('Test Project', 'TESTTESTTEST');
+        ProjectItem__c testProjectItem = createTestProjectStakeholder(userId, testProject.Id, 'Executive Sponsor', 'Informed');
         User testUser = createTestUser('userPI2','standarduserPI2@agourasoftware.com','Testing PI2','standarduserPI2@agourasoftware.com'); 
         
         Test.startTest();
-        List<AgouraFree.LookupSearchResult> results = AgouraFree.ProjectItemControllerExt.getUsers(testProjectItem.Id);
+        List<LookupSearchResult> results = ProjectItemControllerExt.getUsers(testProjectItem.Id);
         System.runas(testUser) {
             try {
-                List<AgouraFree.LookupSearchResult> accessResult = AgouraFree.ProjectItemControllerExt.getUsers(testProjectItem.Id); 
+                List<LookupSearchResult> accessResult = ProjectItemControllerExt.getUsers(testProjectItem.Id); 
             } catch (AuraHandledException e) {
                 System.assertEquals('Insufficient access', e.getMessage());
             }
@@ -56,37 +56,37 @@ public class TestProjectItemCtlExt {
     }
     
     static testMethod void test_getProject() {
-        AgouraFree__Project__c testProject = createTestProject('Test Project', 'TESTTESTTEST');
-        AgouraFree__ProjectItem__c testProjectItem = createTestProjectItem(testProject.Id, 'Project Swim Lane', 'Test Swim Lane'); 
+        Project__c testProject = createTestProject('Test Project', 'TESTTESTTEST');
+        ProjectItem__c testProjectItem = createTestProjectItem(testProject.Id, 'Project Swim Lane', 'Test Swim Lane'); 
         User testUser = createTestUser('userPI3','standarduserPI3@agourasoftware.com','Testing PI3','standarduserPI3@agourasoftware.com');       
         
         Test.startTest();
-        AgouraFree__Project__c results = AgouraFree.ProjectItemControllerExt.getProject(testProjectItem.Id);
+        Project__c results = ProjectItemControllerExt.getProject(testProjectItem.Id);
         System.runas(testUser) {
             try {
-                AgouraFree__Project__c accessResult = AgouraFree.ProjectItemControllerExt.getProject(testProjectItem.Id); 
+                Project__c accessResult = ProjectItemControllerExt.getProject(testProjectItem.Id); 
             } catch (AuraHandledException e) {
                 System.assertEquals('Insufficient access', e.getMessage());
             }
         }
         Test.stopTest();
         
-        System.assertEquals('Test Project', results.get('AgouraFree__Title__c'));
+        System.assertEquals('Test Project', results.get('Title__c'));
     } 
     
     static testMethod void test_projectSearch() {
         Id [] fixedResults = new Id[1]; 
-        AgouraFree__Project__c testProject = createTestProject('Test Project', 'TESTTESTTEST');
+        Project__c testProject = createTestProject('Test Project', 'TESTTESTTEST');
         fixedResults.add(testProject.Id);
         Test.setFixedSearchResults(fixedResults);
         List<String> selectedIds = new List<String>();
         User testUser = createTestUser('userPI4','standarduserPI4@agourasoftware.com','Testing PI4','standarduserPI4@agourasoftware.com'); 
         
         Test.startTest();
-        List<AgouraFree.LookupSearchResult> results = AgouraFree.ProjectItemControllerExt.projectSearch('Test', selectedIds);
+        List<LookupSearchResult> results = ProjectItemControllerExt.projectSearch('Test', selectedIds);
         System.runas(testUser) {
             try {
-                List<AgouraFree.LookupSearchResult> accessResult = AgouraFree.ProjectItemControllerExt.projectSearch('Test', selectedIds);
+                List<LookupSearchResult> accessResult = ProjectItemControllerExt.projectSearch('Test', selectedIds);
             } catch (AuraHandledException e) {
                 System.assertEquals('Insufficient access', e.getMessage());
             }
@@ -105,7 +105,7 @@ public class TestProjectItemCtlExt {
         List<String> selectedIds = new List<String>();
         
         Test.startTest();
-        List<AgouraFree.LookupSearchResult> results = AgouraFree.ProjectItemControllerExt.userOnlySearch('Test', selectedIds);
+        List<LookupSearchResult> results = ProjectItemControllerExt.userOnlySearch('Test', selectedIds);
         Test.stopTest();
         
         System.assertEquals(1, results.size());
@@ -113,15 +113,15 @@ public class TestProjectItemCtlExt {
     }
     
     static testMethod void test_getProjectSwimLanes() {
-        AgouraFree__Project__c testProject = createTestProject('Test Project', 'TESTTESTTEST');
-        AgouraFree__ProjectItem__c testProjectItem = createTestProjectItem(testProject.Id, 'Project Swim Lane', 'Test Swim Lane');  
+        Project__c testProject = createTestProject('Test Project', 'TESTTESTTEST');
+        ProjectItem__c testProjectItem = createTestProjectItem(testProject.Id, 'Project Swim Lane', 'Test Swim Lane');  
         User testUser = createTestUser('userPI6','standarduserPI6@agourasoftware.com','Testing PI6','standarduserPI6@agourasoftware.com');       
         
         Test.startTest();
-        List<AgouraFree__ProjectItem__c> getResults = AgouraFree.ProjectItemControllerExt.getProjectSwimLanes(testProject.Id);
+        List<ProjectItem__c> getResults = ProjectItemControllerExt.getProjectSwimLanes(testProject.Id);
         System.runas(testUser) {
             try {
-                List<AgouraFree__ProjectItem__c> accessResult = AgouraFree.ProjectItemControllerExt.getProjectSwimLanes(testProject.Id); 
+                List<ProjectItem__c> accessResult = ProjectItemControllerExt.getProjectSwimLanes(testProject.Id); 
             } catch (AuraHandledException e) {
                 System.assertEquals('Insufficient access', e.getMessage());
             }
@@ -136,9 +136,9 @@ public class TestProjectItemCtlExt {
         User testUser = createTestUser('userPI7','standarduserPI7@agourasoftware.com','Testing PI7','standarduserPI7@agourasoftware.com');  
         
         Test.startTest();
-        Boolean results = AgouraFree.ProjectItemControllerExt.createAccess();
+        Boolean results = ProjectItemControllerExt.createAccess();
         System.runas(testUser) {            
-            Boolean accessResult = AgouraFree.ProjectItemControllerExt.createAccess(); 
+            Boolean accessResult = ProjectItemControllerExt.createAccess(); 
             System.assertEquals(False, accessResult);      
         }
 		Test.stopTest();
@@ -148,40 +148,40 @@ public class TestProjectItemCtlExt {
             
 	static testMethod void test_getFieldLabelMap() {
         List<String> fieldList = new List<String>();
-        fieldList.add('AgouraFree__Comments__c');
+        fieldList.add('Comments__c');
         Test.startTest();
         
-        Map<String, String> results = AgouraFree.ProjectItemControllerExt.getFieldLabelMap('AgouraFree__ProjectItem__c', fieldList);
+        Map<String, String> results = ProjectItemControllerExt.getFieldLabelMap('ProjectItem__c', fieldList);
            
-        System.assertEquals(true,results.containsKey('AgouraFree__Comments__c'));     
+        System.assertEquals(true,results.containsKey('Comments__c'));     
 		Test.stopTest();
     }
     
     //
     // create test data
     // 
-    private static AgouraFree__Project__c createTestProject(String title, String abbrev) {
-        AgouraFree__Project__c testProject = new AgouraFree__Project__c(AgouraFree__Title__c=title,
-                                                                AgouraFree__Project_Abbreviation__c=abbrev,
-                                                                AgouraFree__Status__c='Draft');
+    private static Project__c createTestProject(String title, String abbrev) {
+        Project__c testProject = new Project__c(Title__c=title,
+                                                                Project_Abbreviation__c=abbrev,
+                                                                Status__c='Draft');
         insert testProject;
         return testProject;
     }
     
-    private static AgouraFree__ProjectItem__c createTestProjectItem(Id projectId, String typeStr, String title) {
-        AgouraFree__ProjectItem__c testProjectItem = new AgouraFree__ProjectItem__c(AgouraFree__Project__c=projectId,
-                                                                            AgouraFree__Type__c=typeStr,
-                                                                            AgouraFree__Title__c=title);
+    private static ProjectItem__c createTestProjectItem(Id projectId, String typeStr, String title) {
+        ProjectItem__c testProjectItem = new ProjectItem__c(Project__c=projectId,
+                                                                            Type__c=typeStr,
+                                                                            Title__c=title);
         insert testProjectItem;
         return testProjectItem;
     }
     
-    private static AgouraFree__ProjectItem__c createTestProjectStakeholder(Id userId, Id projectId, String typeStr, String raci) {
-        AgouraFree__ProjectItem__c testProjectItem = new AgouraFree__ProjectItem__c(AgouraFree__Title__c = userId,
-                                                                            AgouraFree__Project__c = projectId,
-                                                                            AgouraFree__Type__c = typeStr,
-                                                                            AgouraFree__User__c = userId,
-                                                                            AgouraFree__RACI__c = raci);
+    private static ProjectItem__c createTestProjectStakeholder(Id userId, Id projectId, String typeStr, String raci) {
+        ProjectItem__c testProjectItem = new ProjectItem__c(Title__c = userId,
+                                                                            Project__c = projectId,
+                                                                            Type__c = typeStr,
+                                                                            User__c = userId,
+                                                                            RACI__c = raci);
         insert testProjectItem;
         return testProjectItem;
     }
