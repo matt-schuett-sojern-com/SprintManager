@@ -6,7 +6,7 @@ public class TestPickListController {
         Test.startTest();
         
         // Act - start test code
-        List<String> results = AgouraFree.PickListController.getPickListValuesIntoList('AgouraFree__IdeaBoard__c', 'AgouraFree__Status__c');
+        List<String> results = PickListController.getPickListValuesIntoList('IdeaBoard__c', 'Status__c');
         
         // Assert - expected results   
         System.assertEquals(4,results.size());  
