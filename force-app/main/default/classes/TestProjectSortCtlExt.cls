@@ -2,16 +2,16 @@
 public class TestProjectSortCtlExt {
     
     static testMethod void test_removeProjectTask() {
-        AgouraFree__Project__c testProject = createTestProject('Test Project', 'TESTTESTTEST');
-        AgouraFree__ProjectTask__c testProjectTask = createTestProjectTask(testProject.Id, 'Test Project Task', 5.0, null, null, 1.0);
-        List<AgouraFree__ProjectTask__c> taskList = new List<AgouraFree__ProjectTask__c>{};
+        Project__c testProject = createTestProject('Test Project', 'TESTTESTTEST');
+        ProjectTask__c testProjectTask = createTestProjectTask(testProject.Id, 'Test Project Task', 5.0, null, null, 1.0);
+        List<ProjectTask__c> taskList = new List<ProjectTask__c>{};
         User testUser = createTestUser('userPS1','standarduserPS1@agourasoftware.com','Testing PS1','standarduserPS1@agourasoftware.com');
         
         Test.startTest();
-        AgouraFree__ProjectTask__c results = AgouraFree.ProjectSortControllerExt.removeProjectTask(testProjectTask.Id);
+        ProjectTask__c results = ProjectSortControllerExt.removeProjectTask(testProjectTask.Id);
         System.runas(testUser) {
             try {
-                AgouraFree__ProjectTask__c accessResult = AgouraFree.ProjectSortControllerExt.removeProjectTask(testProjectTask.Id); 
+                ProjectTask__c accessResult = ProjectSortControllerExt.removeProjectTask(testProjectTask.Id); 
             } catch (AuraHandledException e) {
                 System.assertEquals('Insufficient access', e.getMessage());
             }
@@ -19,25 +19,25 @@ public class TestProjectSortCtlExt {
         Test.stopTest();
         
         String searchFilter1 = createTestFilter('','','10','All');
-        AgouraFree.ProjectSortControllerExt.PagedResult results1 = AgouraFree.ProjectSortControllerExt.getProjectTasks(searchFilter1, 10.0, 1.0, testProject.Id);
+        ProjectSortControllerExt.PagedResult results1 = ProjectSortControllerExt.getProjectTasks(searchFilter1, 10.0, 1.0, testProject.Id);
         taskList = results1.items;
         System.assertEquals(0, results1.total);        
     }
     
     static testMethod void test_sortProjectTasks() {
-        AgouraFree__Project__c testProject = createTestProject('Test Project', 'TESTTESTTEST');
-        AgouraFree__ProjectTask__c testProjectTask1 = createTestProjectTask(testProject.Id, 'Test Project Task 1', 5.0, null, null, 1.0);
-        AgouraFree__ProjectTask__c testProjectTask2 = createTestProjectTask(testProject.Id, 'Test Project Task 2', 5.0, null, null, 1.1);
-        AgouraFree__ProjectTask__c testProjectTask3 = createTestProjectTask(testProject.Id, 'Test Project Task 3', 5.0, null, null, 2.0);
-        List<AgouraFree__ProjectTask__c> taskList = [SELECT Id, AgouraFree__Order__c FROM AgouraFree__ProjectTask__c];
-        List<AgouraFree__ProjectTask__c> taskList1 = new List<AgouraFree__ProjectTask__c>{};
+        Project__c testProject = createTestProject('Test Project', 'TESTTESTTEST');
+        ProjectTask__c testProjectTask1 = createTestProjectTask(testProject.Id, 'Test Project Task 1', 5.0, null, null, 1.0);
+        ProjectTask__c testProjectTask2 = createTestProjectTask(testProject.Id, 'Test Project Task 2', 5.0, null, null, 1.1);
+        ProjectTask__c testProjectTask3 = createTestProjectTask(testProject.Id, 'Test Project Task 3', 5.0, null, null, 2.0);
+        List<ProjectTask__c> taskList = [SELECT Id, Order__c FROM ProjectTask__c];
+        List<ProjectTask__c> taskList1 = new List<ProjectTask__c>{};
         User testUser = createTestUser('userPS2','standarduserPS2@agourasoftware.com','Testing PS2','standarduserPS2@agourasoftware.com');
         
         Test.startTest();
-        List<AgouraFree__ProjectTask__c> results = AgouraFree.ProjectSortControllerExt.sortProjectTasks(testProject.Id, taskList);
+        List<ProjectTask__c> results = ProjectSortControllerExt.sortProjectTasks(testProject.Id, taskList);
         System.runas(testUser) {
             try {
-                List<AgouraFree__ProjectTask__c> accessResult = AgouraFree.ProjectSortControllerExt.sortProjectTasks(testProject.Id, taskList);
+                List<ProjectTask__c> accessResult = ProjectSortControllerExt.sortProjectTasks(testProject.Id, taskList);
             } catch (AuraHandledException e) {
                 System.assertEquals('Insufficient access', e.getMessage());
             }
@@ -45,17 +45,17 @@ public class TestProjectSortCtlExt {
         Test.stopTest();
         
         String searchFilter1 = createTestFilter('','','10','All');
-        AgouraFree.ProjectSortControllerExt.PagedResult results1 = AgouraFree.ProjectSortControllerExt.getProjectTasks(searchFilter1, 10.0, 1.0, testProject.Id);
+        ProjectSortControllerExt.PagedResult results1 = ProjectSortControllerExt.getProjectTasks(searchFilter1, 10.0, 1.0, testProject.Id);
         taskList1 = results1.items;        
         System.assertEquals(3, results1.total);        
-        System.assertEquals(3, taskList1.get(2).AgouraFree__Order__c);
+        System.assertEquals(3, taskList1.get(2).Order__c);
     }
     
     static testMethod void test_getProjectTasks() {
-        AgouraFree__Project__c testProject = createTestProject('Test Project', 'TESTTESTTEST');
-        AgouraFree__Sprint__c testSprint = createTestSprint(testProject.Id, '2 weeks');
-        AgouraFree__ProjectTask__c testProjectTask = createTestProjectTask(testProject.Id, 'Test Project Task', 5.0, null, null, 1.0);
-        List<AgouraFree__ProjectTask__c> taskList = new List<AgouraFree__ProjectTask__c>{};
+        Project__c testProject = createTestProject('Test Project', 'TESTTESTTEST');
+        Sprint__c testSprint = createTestSprint(testProject.Id, '2 weeks');
+        ProjectTask__c testProjectTask = createTestProjectTask(testProject.Id, 'Test Project Task', 5.0, null, null, 1.0);
+        List<ProjectTask__c> taskList = new List<ProjectTask__c>{};
         String searchFilter1 = createTestFilter('','','10','All');        
         String searchFilter2 = createTestFilter('','','10','BacklogLatest');
         String searchFilter3 = createTestFilter('','','10','Backlog');    
@@ -63,13 +63,13 @@ public class TestProjectSortCtlExt {
         User testUser = createTestUser('userPS3','standarduserPS3@agourasoftware.com','Testing PS3','standarduserPS3@agourasoftware.com');
         
         Test.startTest();
-        AgouraFree.ProjectSortControllerExt.PagedResult results1 = AgouraFree.ProjectSortControllerExt.getProjectTasks(searchFilter1, 10.0, 1.0, testProject.Id);
-        AgouraFree.ProjectSortControllerExt.PagedResult results2 = AgouraFree.ProjectSortControllerExt.getProjectTasks(searchFilter2, 10.0, 1.0, testProject.Id);
-        AgouraFree.ProjectSortControllerExt.PagedResult results3 = AgouraFree.ProjectSortControllerExt.getProjectTasks(searchFilter3, 10.0, 1.0, testProject.Id);
-        AgouraFree.ProjectSortControllerExt.PagedResult results4 = AgouraFree.ProjectSortControllerExt.getProjectTasks(searchFilter4, 10.0, 1.0, testProject.Id);
+        ProjectSortControllerExt.PagedResult results1 = ProjectSortControllerExt.getProjectTasks(searchFilter1, 10.0, 1.0, testProject.Id);
+        ProjectSortControllerExt.PagedResult results2 = ProjectSortControllerExt.getProjectTasks(searchFilter2, 10.0, 1.0, testProject.Id);
+        ProjectSortControllerExt.PagedResult results3 = ProjectSortControllerExt.getProjectTasks(searchFilter3, 10.0, 1.0, testProject.Id);
+        ProjectSortControllerExt.PagedResult results4 = ProjectSortControllerExt.getProjectTasks(searchFilter4, 10.0, 1.0, testProject.Id);
         System.runas(testUser) {
             try {
-                AgouraFree.ProjectSortControllerExt.PagedResult accessResult = AgouraFree.ProjectSortControllerExt.getProjectTasks(searchFilter1, 10.0, 1.0, testProject.Id);
+                ProjectSortControllerExt.PagedResult accessResult = ProjectSortControllerExt.getProjectTasks(searchFilter1, 10.0, 1.0, testProject.Id);
             } catch (AuraHandledException e) {
                 System.assertEquals('Insufficient access', e.getMessage());
             }
@@ -90,7 +90,7 @@ public class TestProjectSortCtlExt {
     
     static testMethod void test_getTypeKeys() {
         Test.startTest();
-        List<String> getResults = AgouraFree.ProjectSortControllerExt.getTypeKeys();
+        List<String> getResults = ProjectSortControllerExt.getTypeKeys();
         Test.stopTest();
         
         System.assertEquals(8, getResults.size());
@@ -98,15 +98,15 @@ public class TestProjectSortCtlExt {
     }
     
     static testMethod void test_getSprintKeys() {
-        AgouraFree__Project__c testProject = createTestProject('Test Project', 'TESTTESTTEST');
-        AgouraFree__Sprint__c testSprint = createTestSprint(testProject.Id, '2 weeks');
+        Project__c testProject = createTestProject('Test Project', 'TESTTESTTEST');
+        Sprint__c testSprint = createTestSprint(testProject.Id, '2 weeks');
         User testUser = createTestUser('userPS4','standarduserPS4@agourasoftware.com','Testing PS4','standarduserPS4@agourasoftware.com');
         
         Test.startTest();
-        List<String> getResults = AgouraFree.ProjectSortControllerExt.getSprintKeys(testProject.Id);
+        List<String> getResults = ProjectSortControllerExt.getSprintKeys(testProject.Id);
         System.runas(testUser) {
             try {
-                List<String> accessResult = AgouraFree.ProjectSortControllerExt.getSprintKeys(testProject.Id);
+                List<String> accessResult = ProjectSortControllerExt.getSprintKeys(testProject.Id);
             } catch (AuraHandledException e) {
                 System.assertEquals('Insufficient access', e.getMessage());
             }
@@ -119,7 +119,7 @@ public class TestProjectSortCtlExt {
     
     static testMethod void test_getIdeaBoardStatusKeys() {
         Test.startTest();
-        List<String> getResults = AgouraFree.ProjectSortControllerExt.getIdeaBoardStatusKeys();
+        List<String> getResults = ProjectSortControllerExt.getIdeaBoardStatusKeys();
         Test.stopTest();
         
         System.assertEquals(4, getResults.size());
@@ -128,7 +128,7 @@ public class TestProjectSortCtlExt {
     
     static testMethod void test_getProjectStatusKeys() {
         Test.startTest();
-        List<String> getResults = AgouraFree.ProjectSortControllerExt.getProjectStatusKeys();
+        List<String> getResults = ProjectSortControllerExt.getProjectStatusKeys();
         Test.stopTest();
         
         System.assertEquals(3, getResults.size());
@@ -137,7 +137,7 @@ public class TestProjectSortCtlExt {
     
     static testMethod void test_getProjectTaskStatusKeys() {
         Test.startTest();
-        List<String> getResults = AgouraFree.ProjectSortControllerExt.getProjectTaskStatusKeys();
+        List<String> getResults = ProjectSortControllerExt.getProjectTaskStatusKeys();
         Test.stopTest();
         
         System.assertEquals(8, getResults.size());
@@ -147,27 +147,27 @@ public class TestProjectSortCtlExt {
     //
     // create test data
     // 
-    private static AgouraFree__Project__c createTestProject(String title, String abbrev) {
-        AgouraFree__Project__c testProject = new AgouraFree__Project__c(AgouraFree__Title__c=title,
-                                                                AgouraFree__Project_Abbreviation__c=abbrev,
-                                                                AgouraFree__Status__c='Draft');
+    private static Project__c createTestProject(String title, String abbrev) {
+        Project__c testProject = new Project__c(Title__c=title,
+                                                                Project_Abbreviation__c=abbrev,
+                                                                Status__c='Draft');
         insert testProject;
         return testProject;
     }
     
-    private static AgouraFree__ProjectTask__c createTestProjectTask(Id projectId, String title, Decimal points, Id swimLane, Id masterTask, Decimal order) {
-        AgouraFree__ProjectTask__c testProjectTask = new AgouraFree__ProjectTask__c(AgouraFree__Project__c=projectId,
-                                                                            AgouraFree__Title__c=title,
-                                                                            AgouraFree__Points__c=points,
-                                                                            AgouraFree__Swim_Lane__c=swimLane,
-                                                                            AgouraFree__Master_Task__c=masterTask,
-                                                                            AgouraFree__Order__c=order);
+    private static ProjectTask__c createTestProjectTask(Id projectId, String title, Decimal points, Id swimLane, Id masterTask, Decimal order) {
+        ProjectTask__c testProjectTask = new ProjectTask__c(Project__c=projectId,
+                                                                            Title__c=title,
+                                                                            Points__c=points,
+                                                                            Swim_Lane__c=swimLane,
+                                                                            Master_Task__c=masterTask,
+                                                                            Order__c=order);
         insert testProjectTask;
         return testProjectTask;
     }
     
     private static String createTestFilter(String searchKeyStr, String typeKeyStr, String rowKeyStr, String sprintKeyStr) {
-        AgouraFree.ProjectSortControllerExt.Filter testFilter = new AgouraFree.ProjectSortControllerExt.Filter();
+        ProjectSortControllerExt.Filter testFilter = new ProjectSortControllerExt.Filter();
         testFilter.searchKey = searchKeyStr;
         testFilter.typeKey = typeKeyStr;
         testFilter.rowKey = rowKeyStr;
@@ -176,11 +176,11 @@ public class TestProjectSortCtlExt {
         return myJSON;
     }
     
-    private static AgouraFree__Sprint__c createTestSprint(Id projectId, String sprintLength) {
-        AgouraFree__Sprint__c testSprint = new AgouraFree__Sprint__c(AgouraFree__Project__c=projectId,
-                                                             AgouraFree__Sprint_Length__c=sprintLength,
-                                                             AgouraFree__Sprint_Number__c=1,
-                                                             AgouraFree__Sprint_Name__c='Sprint 1');
+    private static Sprint__c createTestSprint(Id projectId, String sprintLength) {
+        Sprint__c testSprint = new Sprint__c(Project__c=projectId,
+                                                             Sprint_Length__c=sprintLength,
+                                                             Sprint_Number__c=1,
+                                                             Sprint_Name__c='Sprint 1');
         insert testSprint;
         return testSprint;
     }
